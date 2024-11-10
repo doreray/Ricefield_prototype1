@@ -2,6 +2,17 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+These plug-ins need to be installed:
+npm install react react-dom
+npm install firebase
+npm install react-hook-form
+npm install zod
+npm install @hookform/resolvers
+npm install react-router-dom
+npm install react-password-checklist
+npm install @shadcn/ui
+npm install tailwindcss
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
