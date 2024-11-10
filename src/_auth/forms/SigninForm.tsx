@@ -33,6 +33,7 @@ const SigninForm = () => {
 
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (data: z.infer<typeof SigninValidation>) => {
     try {
@@ -40,7 +41,9 @@ const SigninForm = () => {
       console.log('Logged in:', userCredential.user);
       navigate('/home'); // redirect after successful login
     } catch (error) {
-      console.error('Error logging in:', error);
+      if (error instanceof Error) {
+        setError('Invalid email or password. Please try again.');
+      }
     }
   };
 
@@ -92,6 +95,8 @@ const SigninForm = () => {
               </FormItem>
             )}
           />
+
+          {error && <p className="text-red text-center mt-4">{error}</p>}
 
           <Button type="submit" className="shad-button_primary rounded-full mt-4"> Log In </Button>
 
