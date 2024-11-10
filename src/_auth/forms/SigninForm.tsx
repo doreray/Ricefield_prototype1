@@ -74,11 +74,19 @@ const SigninForm = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  className={`shad-input rounded-xl pr-10`}
-                  {...field}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    className={`shad-input rounded-xl pr-10`} // Add right padding for the button
+                    {...field}
+                  />
+                  <img
+                    src={showPassword ? "assets/icons/show password - icon.svg" : "assets/icons/hide password - icon.svg"}
+                    alt={showPassword ? "Show" : "Hide"}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6 cursor-pointer"
+                  />
+                </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
