@@ -23,6 +23,7 @@
     "react-hook-form": "^7.53.0",
     "react-password-checklist": "^1.8.1",
     "react-router-dom": "^6.27.0",
+    "react-select": "^5.8.3",
     "tailwind-merge": "^2.5.3",
     "zod": "^3.23.8"
   },

@@ -52,7 +52,7 @@ const SigninForm = () => {
       <div className="sm:w-420 flex-center flex-col">
             <img src= 'public/assets/icons/Ricefield_logo.svg' alt='logo'/>
 
-            <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12"> Let's get cooking! </h2>
+            <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12"> It's time to cook! </h2>
             <p className="text-light-3 body-regular md:body-regular mt-2">Log in with your credentials</p>
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2 w-full">
