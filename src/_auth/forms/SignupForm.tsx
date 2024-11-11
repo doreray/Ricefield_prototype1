@@ -1,3 +1,5 @@
+import { db } from "@/lib/firebase/config"; // Firestore initialization
+import { doc, setDoc, collection, getDocs, query, where } from "firebase/firestore"; 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form"
@@ -63,6 +65,25 @@ const SignupForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
     try {
+      // Extract school email
+      const emailDomain = values.email.substring(values.email.indexOf("@") + 1);
+
+      // Compare school email to existing school document
+      const schoolsRef = collection(db, "schools");
+      const domainQuery = query(schoolsRef, where("email", "==", emailDomain));
+      const querySnapshot = await getDocs(domainQuery);
+  
+      if (querySnapshot.empty) {
+        form.setError("email", { message: "The email domain is not associated with any school" });
+        return;
+      }
+  
+      // Extract the school ID 
+      let schoolId;
+      querySnapshot.forEach((doc) => {
+        schoolId = doc.id; 
+      });
+
       // Attempt to create a user with the provided email and password
       const userCredentials = await createUserWithEmailAndPassword(auth, values.email, values.password);
 
@@ -70,8 +91,14 @@ const SignupForm = () => {
 
       setIsLoading(true);
 
-      // If successful, proceed (you can save user data, or navigate, etc.)
-      sessionStorage.setItem("pendingUser", JSON.stringify(values));
+      // Store user info 
+      sessionStorage.setItem("userBasicInfo", JSON.stringify({
+        uid: userCredentials.user.uid,
+        email: values.email,
+        username: values.username,
+        schoolId: schoolId,
+    }));
+
       navigate("/verify-email");
   
     } catch (error) {
