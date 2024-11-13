@@ -37,7 +37,7 @@ const SignupForm = () => {
     username: z.string().min(1, "Don't forget to name your farmer!"),
     email: z.string()
     .email("Oops...you forgot this :)")
-    .regex(/\.edu$/, "Gotta use an education account (.edu)!"),
+    .regex(/\.edu$/, "Gotta use your college email (.edu)!"),
     password: z.string().min(8),
     retypePassword: z.string()
     .min(1, "Gotta retype your password!")

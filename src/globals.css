@@ -314,9 +314,8 @@
   }
 
   .shad-input:focus {
-    @apply ring-2 ring-primary-500 ring-offset-light-3;
+    @apply ring-2 ring-primary-500 ring-offset-light-3 !important;
   }
-
   .shad-input:hover {
     @apply ring-2 ring-gray-300;
   }
@@ -352,6 +351,35 @@
 
   .shad-button_ghost {
     @apply flex gap-4 items-center justify-start hover:bg-transparent hover:text-white !important;
+  }
+  .select-control {
+    @apply h-12 bg-light-2 border-none placeholder:text-light-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+  }
+  .select-control:hover{
+    @apply ring-2 ring-gray-300 !important;
+  }
+  .select-control:focus-within{
+    @apply ring-2 ring-primary-500 !important;
+  }
+  
+  .select-menu {
+    @apply bg-light-2 border-gray-500 !important;
+  }
+  
+  .select-option {
+    @apply px-4 py-2 text-sm cursor-pointer bg-light-2 !important;
+  }
+
+  .select-option:hover {
+    @apply bg-option-hover !important;
+  }
+
+  .select-option--is-selected {
+    @apply bg-option-selected text-white !important;  /* You can use any color from Tailwind or custom colors */
+  }
+  
+  .select-option--is-selected:hover {
+    @apply bg-option-selected-hover !important;  /* Darker background on hover */
   }
 }
 

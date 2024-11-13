@@ -32,6 +32,9 @@ module.exports = {
   			'light-2': '#EFEFEF',
   			'light-3': '#84ad82',
   			'light-4': '#4b7349',
+			'option-selected': '#438c56',
+			'option-selected-hover': '#336b42',
+			'option-hover': '#d5ecdb',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

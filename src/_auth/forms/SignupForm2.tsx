@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, setDoc, collection, getDocs, query, where } from 'firebase/firestore';
@@ -16,6 +16,7 @@ import {
     FormMessage,
   } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import Select from 'react-select';
 
 
 interface UserData {
@@ -31,7 +32,7 @@ const SignupValidation = z.object({
   firstname: z.string().min(2, "First name must be at least 2 characters long"),
   school: z.string().min(1, "Don't forget to add your school!"),
   major: z.string().min(1, "Don't forget to add your major"),
-  gradyear: z.string().min(4, "Needs to be a valid school year!")
+  gradyear: z.string().min(4, "Needs to be a valid school year!").max(4, "Needs to be a valid school year!")
 });
 
 function SignupForm2() {
@@ -116,15 +117,37 @@ function SignupForm2() {
             control={form.control}
             name="school"
             render={({ field }) => (
-              <FormItem>
+                <FormItem>
                 <FormLabel>School</FormLabel>
                 <FormControl>
-                  <Input type="text" className={`shad-input rounded-xl ${form.formState.errors.lastname? 'border-red-500' : ''}`} {...field} placeholder="Michigan State University"/>
+                    <Controller
+                    control={form.control}
+                    name="school"
+                    render={({ field: { onChange, value } }) => (
+                        <Select
+                        value={value ? { label: value, value } : null}  // Ensures correct value structure
+                        onChange={(selectedOption) => onChange(selectedOption?.value)}  // Pass the value to react-hook-form
+                        options={[
+                            { value: 'Michigan State University', label: 'Michigan State University' },
+                            { value: 'Harvard University', label: 'Harvard University' },
+                            { value: 'Stanford University', label: 'Stanford University' },
+                        ]}
+                        isSearchable
+                        placeholder="Michigan State University"
+                        //styles
+                        classNames={{
+                            control: () => 'select-control',
+                            menu: () => 'select-menu',
+                            option: (state) => `select-option ${state.isSelected ? 'select-option--is-selected' : ''}`,
+                          }}
+                        />
+                    )}
+                    />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
+                </FormItem>
             )}
-          />
+            />
           <div className="flex gap-2">
             <FormField
                 control={form.control}
