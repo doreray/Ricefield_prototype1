@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { auth, db } from '@/lib/firebase/config';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from 'zod';
@@ -55,14 +55,20 @@ function SignupForm2() {
         setLoading(true);
         const user = auth.currentUser;
         if (user) {
-            await setDoc(doc(db, 'users', user.uid), {
-                lastname: data.lastname,
-                firstname: data.firstname,
-                school: data.school,
-                major: data.major,
-                gradyear: data.gradyear,
-            });
-            navigate('/home');
+          const userBasicInfo = JSON.parse(sessionStorage.getItem("userBasicInfo") || "{}");
+          const userData = 
+          {
+            email: userBasicInfo.email,
+            username: userBasicInfo.username,
+            last_name: data.lastname,
+            first_name: data.firstname,
+            major: data.major,
+            grad_year: parseInt(data.gradyear),
+          };
+
+          const userDocRef = doc(db, "schools", userBasicInfo.schoolId, "users", userBasicInfo.uid);
+          await setDoc(userDocRef, userData);
+              navigate('/home');
         }
     } catch (error) {
         console.error("Error saving additional data:", error);
