@@ -17,6 +17,7 @@ import {
   } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import Select from 'react-select';
+import Cookies from 'js-cookie';
 
 
 interface UserData {
@@ -55,7 +56,7 @@ function SignupForm2() {
         setLoading(true);
         const user = auth.currentUser;
         if (user) {
-          const userBasicInfo = JSON.parse(sessionStorage.getItem("userBasicInfo") || "{}");
+          const userBasicInfo = JSON.parse(Cookies.get("userBasicInfo") || "{}"); // Retrieve cookie data using js-cookie
           const userData = 
           {
             email: userBasicInfo.email,

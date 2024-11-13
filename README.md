@@ -13,6 +13,7 @@ npm install react-router-dom
 npm install react-password-checklist
 npm install @shadcn/ui
 npm install tailwindcss
+npm install js-cookie
 ```
 
 Currently, two official plugins are available:

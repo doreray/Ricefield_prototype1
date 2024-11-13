@@ -8,20 +8,6 @@ const VerifyEmail = () => {
   const [warningMessage, setWarningMessage] = useState('');
   const navigate = useNavigate();
 
-  const checkEmailVerification = async () => {
-    setIsChecking(true);
-    const user = auth.currentUser;
-    if (user) {
-      await user.reload();
-      if (user.emailVerified) {
-        navigate("/sign-up-more");
-      } else {
-        setWarningMessage("Please verify your email.");
-      }
-    }
-    setIsChecking(false);
-  };
-
   return (
     <div className="sm:w-420 flex-center flex-col">
       <img src="public/assets/icons/Ricefield_logo.svg" alt="logo" />
@@ -36,15 +22,6 @@ const VerifyEmail = () => {
       {warningMessage && (
         <p className="text-red mt-4">{warningMessage}</p>
       )}
-
-      <Button 
-        type="submit" 
-        className="shad-button_primary rounded-full sm:w-420 text-lg" 
-        onClick={checkEmailVerification} 
-        disabled={isChecking}
-      >
-        {isChecking ? "Checking..." : "Continue"}
-      </Button>
     </div>
   );
 };

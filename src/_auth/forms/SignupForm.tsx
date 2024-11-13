@@ -24,6 +24,7 @@ import PasswordChecklist from "react-password-checklist";
 import { auth } from "@/lib/firebase/config";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
 import { FirebaseError } from "firebase/app"
+import Cookies from 'js-cookie';
 
 const SignupForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -92,12 +93,12 @@ const SignupForm = () => {
       setIsLoading(true);
 
       // Store user info 
-      sessionStorage.setItem("userBasicInfo", JSON.stringify({
+      Cookies.set("userBasicInfo", JSON.stringify({
         uid: userCredentials.user.uid,
         email: values.email,
         username: values.username,
         schoolId: schoolId,
-    }));
+      }), { expires: 7, path: "/" }); // Cookie expires in 7 days
 
       navigate("/verify-email");
   

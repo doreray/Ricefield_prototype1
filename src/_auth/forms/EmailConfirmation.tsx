@@ -31,6 +31,7 @@ const VerifyEmailForm = () => {
         setIsLoading(true);
         await applyActionCode(auth, oobCode); // Apply the email verification code
         setSuccess(true); // Set success message
+        setTimeout(() => navigate("/sign-up-more"), 2000);
       } catch (error) {
         console.error("Error verifying email:", error);
         setError("Failed to verify email. Please try again or request a new link.");
@@ -61,7 +62,7 @@ const VerifyEmailForm = () => {
         {error && <p className="text-red text-center mt-4">{error}</p>}
         {success && (
           <p className="text-green text-center mt-4">
-            Your email has been verified! Please go back to previous page.
+            Your email has been verified! Redirecting Shortly.
           </p>
         )}
       </div>
