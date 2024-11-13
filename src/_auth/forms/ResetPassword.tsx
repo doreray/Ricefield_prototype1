@@ -1,6 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Button } from "@/components/ui/button"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -8,15 +8,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { z } from 'zod';
-import Loader from '../../components/shared/Loader';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { z } from "zod";
+import Loader from "../../components/shared/Loader";
 import { useState, useEffect } from "react";
 import PasswordChecklist from "react-password-checklist";
 import { auth } from "@/lib/firebase/config";
-import { confirmPasswordReset } from "firebase/auth"
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { confirmPasswordReset } from "firebase/auth";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 const ResetPasswordForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,36 +27,44 @@ const ResetPasswordForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const oobCode = searchParams.get("oobCode");
+  const mode = searchParams.get("mode"); // Extracting mode parameter
 
+  // Check for valid oobCode or mode for resetPassword
   useEffect(() => {
+    if (mode !== "resetPassword") {
+      setError("Invalid mode. This link cannot be used for password reset.");
+      return;
+    }
     if (!oobCode) {
       setError("Invalid or expired reset link.");
     }
-  }, [oobCode]);
+  }, [oobCode, mode]);
 
-  const ResetPasswordValidation = z.object({
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    retypePassword: z.string().min(1, "Please retype your password"),
-  }).superRefine((data, ctx) => {
-    if (data.password !== data.retypePassword) {
-      ctx.addIssue({
-        path: ["retypePassword"],
-        message: "Passwords do not match.",
-        code: z.ZodIssueCode.custom,
-      });
-    }
-  });
+  const ResetPasswordValidation = z
+    .object({
+      password: z.string().min(8, "Password must be at least 8 characters"),
+      retypePassword: z.string().min(1, "Please retype your password"),
+    })
+    .superRefine((data, ctx) => {
+      if (data.password !== data.retypePassword) {
+        ctx.addIssue({
+          path: ["retypePassword"],
+          message: "Passwords do not match.",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    });
 
   const form = useForm<z.infer<typeof ResetPasswordValidation>>({
     resolver: zodResolver(ResetPasswordValidation),
     defaultValues: {
       password: "",
-      retypePassword: ""
+      retypePassword: "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof ResetPasswordValidation>) => {
-    if (!oobCode) {
+    if (!oobCode || mode !== "resetPassword") {
       return;
     }
 
@@ -75,10 +83,12 @@ const ResetPasswordForm = () => {
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col">
-        <img src='public/assets/icons/Ricefield_logo.svg' alt='logo' />
+        <img src="/assets/icons/Ricefield_logo.svg" alt="logo" />
 
         <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12"> Reset Your Password </h2>
-        <p className="text-light-3 body-regular md:body-regular mt-2">Enter a new password to reset your account.</p>
+        <p className="text-light-3 body-regular md:body-regular mt-2">
+          Enter a new password to reset your account.
+        </p>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2 w-full">
           <FormField
@@ -96,7 +106,7 @@ const ResetPasswordForm = () => {
                       onFocus={() => setIsPasswordFocused(true)}
                     />
                     <img
-                      src={showPassword ? "assets/icons/show password - icon.svg" : "assets/icons/hide password - icon.svg"}
+                      src={showPassword ? "/assets/icons/show password - icon.svg" : "/assets/icons/hide password - icon.svg"}
                       alt={showPassword ? "Show" : "Hide"}
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6 cursor-pointer"
@@ -149,7 +159,7 @@ const ResetPasswordForm = () => {
         </form>
       </div>
     </Form>
-  )
-}
+  );
+};
 
 export default ResetPasswordForm;

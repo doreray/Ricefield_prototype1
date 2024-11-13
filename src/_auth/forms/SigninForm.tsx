@@ -3,22 +3,18 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-  } from "@/components/ui/form"
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { SigninValidation } from "@/lib/validation" 
-import { z, ZodIssueCode, ZodError } from 'zod';
-import Loader from '../../components/shared/Loader';
-import App from '../../App';
-import { createUserAccount } from "@/lib/firebase/api";
-import React, {useState} from "react";
-import PasswordChecklist from "react-password-checklist";
+import { SigninValidation } from "@/lib/validation"
+import { z } from 'zod';
+import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "@/lib/firebase/config"
 
@@ -26,8 +22,8 @@ const SigninForm = () => {
   const form = useForm<z.infer<typeof SigninValidation>>({
     resolver: zodResolver(SigninValidation),
     defaultValues: {
-        email: "",
-        password: "",
+      email: "",
+      password: "",
     },
   })
 
@@ -50,12 +46,12 @@ const SigninForm = () => {
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col">
-            <img src= 'public/assets/icons/Ricefield_logo.svg' alt='logo'/>
+        <img src='public/assets/icons/Ricefield_logo.svg' alt='logo' />
 
-            <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12"> It's time to cook! </h2>
-            <p className="text-light-3 body-regular md:body-regular mt-2">Log in with your credentials</p>
+        <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12"> It's time to cook! </h2>
+        <p className="text-light-3 body-regular md:body-regular mt-2">Log in with your credentials</p>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2 w-full">
 
           <FormField
             control={form.control}
@@ -64,7 +60,7 @@ const SigninForm = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" className={`shad-input rounded-xl ${form.formState.errors.email? 'border-red-500' : ''}`} {...field}/>
+                  <Input type="email" className={`shad-input rounded-xl ${form.formState.errors.email ? 'border-red-500' : ''}`} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -77,20 +73,23 @@ const SigninForm = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    className={`shad-input rounded-xl pr-10`} // Add right padding for the button
-                    {...field}
-                  />
-                  <img
-                    src={showPassword ? "assets/icons/show password - icon.svg" : "assets/icons/hide password - icon.svg"}
-                    alt={showPassword ? "Show" : "Hide"}
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6 cursor-pointer"
-                  />
-                </div>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      className={`shad-input rounded-xl pr-10`} // Add right padding for the button
+                      {...field}
+                    />
+                    <img
+                      src={showPassword ? "assets/icons/show password - icon.svg" : "assets/icons/hide password - icon.svg"}
+                      alt={showPassword ? "Show" : "Hide"}
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6 cursor-pointer"
+                    />
+                  </div>
                 </FormControl>
+                <FormDescription className="pt-1">
+                  <Link to="/pre-reset-password" className="text-primary-500 text-sm ml-1">Forgot Password?</Link>
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -102,10 +101,10 @@ const SigninForm = () => {
 
           <p className="text-small-regular text-dark-4 text-center mt-2">
             First time in the field?
-            <Link to="/sign-in" className="text-primary-500 text-small-semibold ml-1">Sign up</Link>
+            <Link to="/sign-up" className="text-primary-500 text-small-semibold ml-1">Sign up</Link>
           </p>
-          </form>
-      </div>     
+        </form>
+      </div>
     </Form>
   )
 }
