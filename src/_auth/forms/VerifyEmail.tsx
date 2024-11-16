@@ -8,6 +8,29 @@ const VerifyEmail = () => {
   const [warningMessage, setWarningMessage] = useState('');
   const navigate = useNavigate();
 
+  const checkEmailVerification = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      await user.reload();
+      if (user.emailVerified) {
+        navigate("/sign-up-more");
+      }
+    }
+  };
+
+  useEffect(() => {
+    setIsChecking(true);
+    // Set interval to check for verification every 2 seconds
+    const intervalId = setInterval(() => {
+      checkEmailVerification();
+    }, 2000);
+
+    // Clear interval when component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
   return (
     <div className="sm:w-420 flex-center flex-col">
       <img src="public/assets/icons/Ricefield_logo.svg" alt="logo" />
@@ -18,10 +41,6 @@ const VerifyEmail = () => {
       <p className="text-dark-1 body-regular md:body-regular mt-4">
         Please check your inbox to continue the process.
       </p>
-      
-      {warningMessage && (
-        <p className="text-red mt-4">{warningMessage}</p>
-      )}
     </div>
   );
 };

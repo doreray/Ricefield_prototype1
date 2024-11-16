@@ -1,10 +1,9 @@
 import './globals.css';
 import { Routes, Route, useSearchParams } from 'react-router-dom';
 import SigninForm from './_auth/forms/SigninForm';
-import { Home } from './_root/pages';
 import SignupForm from './_auth/forms/SignupForm';
 import AuthLayout from './_auth/AuthLayout';
-import RootLayout from './_root/RootLayout';
+import Home from './_root/Home';
 import VerifyEmail from './_auth/forms/VerifyEmail';
 import SignupForm2 from './_auth/forms/SignupForm2';
 import EmailResetPassword from './_auth/forms/EmailResetPassword';
@@ -41,8 +40,8 @@ const App = () => {
         </Route>
 
         {/* Private routes */}
-        <Route element={<RootLayout />}>
-          <Route path="/home" element={<Home />} />
+        <Route element={<Home />}>
+          <Route path="/" element={<Home />} />
         </Route>
       </Routes>
     </main>

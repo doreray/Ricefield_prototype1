@@ -35,6 +35,7 @@ module.exports = {
 			'option-selected': '#438c56',
 			'option-selected-hover': '#336b42',
 			'option-hover': '#d5ecdb',
+			'home-divider': '#F6F8F9',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
