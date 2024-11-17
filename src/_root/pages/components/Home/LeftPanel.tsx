@@ -22,7 +22,7 @@ function LeftPanel() {
       <div className="w-68 border border-slate-200 rounded-lg bg-white">
         {/* Button Header */}
         <div
-          className="flex items-center justify-between px-5 py-2 cursor-pointer"
+          className="flex items-center justify-between px-5 py-2 cursor-pointer h-11 rounded-lg"
           onClick={toggleSpacesMenu}
         >
           <div className="font-bold text-base">Spaces</div>
