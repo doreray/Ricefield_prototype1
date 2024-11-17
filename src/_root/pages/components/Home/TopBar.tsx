@@ -57,8 +57,8 @@ function TopBar() {
   return (
     <div className="h-16 bg-white text-black flex justify-between items-center px-4 border border-slate-200">
       <div className="flex items-center space-x-1">
-      <img src="/assets/icons/ricefield logo home.svg" alt="Logo" className="h-7" />
-      <img src="/assets/icons/beta version mark.svg" alt="BETA" className='h-5 mb-3'/>
+      <img src="/assets/icons/ricefield logo home.svg" alt="Logo" className="h-7 cursor-pointer" onClick={() => navigate('/')}/>
+      <img src="/assets/icons/beta version mark.svg" alt="BETA" className='h-5 mb-3 cursor-pointer'onClick={() => navigate('/')}/>
       </div>
       <div className="flex items-center space-x-4">
         {/* Log In Button */}
