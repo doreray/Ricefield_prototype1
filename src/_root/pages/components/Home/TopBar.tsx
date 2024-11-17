@@ -62,7 +62,7 @@ function TopBar() {
       </div>
       <div className="flex items-center space-x-4">
         {/* Log In Button */}
-        <Button className="shad-button_primary rounded-full h-10 w-40" onClick={() => navigate('/sign-up')}>
+        <Button className="shad-button_primary rounded-full h-10 w-40" onClick={() => navigate('/sign-in')}>
           Log In
         </Button>
         {/* More Button with Dropdown */}
