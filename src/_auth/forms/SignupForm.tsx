@@ -220,7 +220,7 @@ const SignupForm = () => {
             )}
           />
 
-          <Button type="submit" className="shad-button_primary rounded-full">
+          <Button type="submit" className="shad-button_primary rounded-full mt-4">
 
           {isLoading ? (
             <div className="flex-center gap-2">

@@ -14,15 +14,15 @@ function Home() {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel */}
-        <div className="hidden md:block w-64 flex-shrink-0 overflow-y-auto">
+        <div className="hidden md:block w-72 flex-shrink-0 overflow-y-auto">
           <LeftPanel />
         </div>
         {/* Middle Panel */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto p-2">
           <MidPanel />
         </div>
         {/* Right Panel */}
-        <div className="hidden lg:block w-64 flex-shrink-0 overflow-y-auto">
+        <div className="hidden lg:block w-72 flex-shrink-0 overflow-y-auto">
           <RightPanel />
         </div>
       </div>

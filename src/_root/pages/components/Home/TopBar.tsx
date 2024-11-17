@@ -55,14 +55,14 @@ function TopBar() {
   }, [isMenuOpen]);
 
   return (
-    <div className="h-16 bg-white text-black flex justify-between items-center px-4">
+    <div className="h-16 bg-white text-black flex justify-between items-center px-4 border border-slate-200">
       <div className="flex items-center space-x-1">
       <img src="/assets/icons/ricefield logo home.svg" alt="Logo" className="h-7" />
       <img src="/assets/icons/beta version mark.svg" alt="BETA" className='h-5 mb-3'/>
       </div>
       <div className="flex items-center space-x-4">
         {/* Log In Button */}
-        <Button className="shad-button_log_in rounded-full h-10 w-40" onClick={() => navigate('/sign-up')}>
+        <Button className="shad-button_primary rounded-full h-10 w-40" onClick={() => navigate('/sign-up')}>
           Log In
         </Button>
         {/* More Button with Dropdown */}
@@ -82,7 +82,7 @@ function TopBar() {
 
           {(isMenuOpen || isClosing) && (
             <div
-              className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10"
+              className="absolute right-0 mt-2 w-60 bg-white border border-gray-300 rounded-lg shadow-lg z-10"
               style={{
                 ...menuStyle,
                 ...(isClosing && {
@@ -94,22 +94,31 @@ function TopBar() {
             >
               <ul className="flex flex-col">
                 <li
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => alert('Settings clicked')}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-3"
+                  onClick={() => alert('Connect clicked')}
                 >
-                  Settings
+                  <img src='/assets/icons/handshake-icon.svg' className='h-5'/>
+                  <div className='font-semibold'>
+                  Connect with us
+                  </div>
                 </li>
                 <li
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => alert('Help clicked')}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-3"
+                  onClick={() => alert('Dict clicked')}
                 >
-                  Help
+                  <img src='/assets/icons/dictionary-icon.svg' className='h-5'/>
+                  <div className='font-semibold'>
+                  Farmers' Dictionary
+                  </div>
                 </li>
                 <li
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => alert('Log Out clicked')}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-3"
+                  onClick={() => alert('Report clicked')}
                 >
-                  Log Out
+                  <img src='/assets/icons/report-icon.svg' className='h-5'/>
+                  <div className='font-semibold'>
+                  Report an issue
+                  </div>
                 </li>
               </ul>
             </div>

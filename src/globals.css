@@ -300,6 +300,9 @@
   .border-red-500 {
     @apply ring-2 ring-red outline-none;
 }
+  .w-68{
+    width: 17rem;
+  }
 }
 
 @layer components {
@@ -329,15 +332,11 @@
   }
 
   /* Button */
-  .shad-button_log_in{
-    @apply bg-primary-500 hover:bg-primary-500 text-light-1 !important;
+  .shad-button_spaces {
+    @apply bg-white hover:bg-slate-50 text-black flex gap-2 rounded-xl justify-start !important
   }
   .shad-button_primary {
-    @apply bg-primary-500 hover:bg-primary-500 text-light-1 flex gap-2 mt-4 !important;
-  }
-
-  .shad-button_primary:hover {
-    @apply bg-primary-600; /* Darker shade on hover */
+    @apply bg-primary-500 hover:bg-primary-600 text-light-1 flex gap-2 !important;
   }
 
   .shad-button_primary:focus {

@@ -177,7 +177,7 @@ function SignupForm2() {
                 )}
             />
         </div>
-          <Button type="submit" className="shad-button_primary rounded-full mt-4" disabled={loading}>
+          <Button type="submit" className="shad-button_primary rounded-full mt-6" disabled={loading}>
             {loading ? 'Saving...' : 'Submit'}
           </Button>
           </form>
