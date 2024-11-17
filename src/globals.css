@@ -303,6 +303,10 @@
   .w-68{
     width: 17rem;
   }
+  .rounded-t-xl-1{
+    border-top-left-radius: 0.69rem;
+    border-top-right-radius: 0.69rem;
+  }
 }
 
 @layer components {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 function LeftPanel() {
-  const [isSpacesMenuOpen, setIsSpacesMenuOpen] = useState(false);
+  const [isSpacesMenuOpen, setIsSpacesMenuOpen] = useState(true);
 
   const toggleSpacesMenu = () => {
     setIsSpacesMenuOpen((prev) => !prev);
@@ -61,7 +61,7 @@ function LeftPanel() {
               />
               {/* Space Name */}
               <div className="font-medium text-sm">{space}</div>
-            </li>
+          </li>
           ))}
         </ul>
       </div>

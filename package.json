@@ -16,7 +16,7 @@
     "appwrite": "^16.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "firebase": "^11.0.1",
+    "firebase": "^11.0.2",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.452.0",
     "react": "^18.3.1",

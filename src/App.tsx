@@ -4,6 +4,7 @@ import SigninForm from './_auth/forms/SigninForm';
 import SignupForm from './_auth/forms/SignupForm';
 import AuthLayout from './_auth/AuthLayout';
 import Home from './_root/Home';
+import LoggedInHome from './_root/LoggedInHome';
 import VerifyEmail from './_auth/forms/VerifyEmail';
 import SignupForm2 from './_auth/forms/SignupForm2';
 import EmailResetPassword from './_auth/forms/EmailResetPassword';
@@ -40,9 +41,8 @@ const App = () => {
         </Route>
 
         {/* Private routes */}
-        <Route element={<Home />}>
           <Route path="/" element={<Home />} />
-        </Route>
+          <Route path="/home" element={<LoggedInHome />} />
       </Routes>
     </main>
   );

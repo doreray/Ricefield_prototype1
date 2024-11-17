@@ -51,32 +51,42 @@ function SignupForm2() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  const schoolMap = {
+    "Michigan State University": "1DpsYxX8ZfmBBGU8z3nx",
+  };
+  
   const onSubmit = async (data: z.infer<typeof SignupValidation>) => {
     try {
-        setLoading(true);
-        const user = auth.currentUser;
-        if (user) {
-          const userBasicInfo = JSON.parse(Cookies.get("userBasicInfo") || "{}"); // Retrieve cookie data using js-cookie
-          const userData = 
-          {
-            email: userBasicInfo.email,
-            username: userBasicInfo.username,
-            last_name: data.lastname,
-            first_name: data.firstname,
-            major: data.major,
-            grad_year: parseInt(data.gradyear),
-          };
-
-          const userDocRef = doc(db, "schools", userBasicInfo.schoolId, "users", userBasicInfo.uid);
-          await setDoc(userDocRef, userData);
-              navigate('/home');
-        }
+      setLoading(true);
+      const user = auth.currentUser;
+      if (user) {
+        const userBasicInfo = JSON.parse(Cookies.get("userBasicInfo") || "{}"); // Retrieve cookie data using js-cookie
+        const userData = {
+          email: userBasicInfo.email,
+          username: userBasicInfo.username,
+          last_name: data.lastname,
+          first_name: data.firstname,
+          major: data.major,
+          grad_year: parseInt(data.gradyear),
+        };
+  
+         // Ensure the school selected by the user is a valid key in the schoolMap
+      const schoolId = schoolMap[data.school as keyof typeof schoolMap]; // Type assertion
+      if (!schoolId) {
+        throw new Error("Invalid school selection.");
+      }
+  
+        const userDocRef = doc(db, "schools", schoolId, "users", userBasicInfo.uid);
+        await setDoc(userDocRef, userData);
+        navigate('/home');
+      }
     } catch (error) {
-        console.error("Error saving additional data:", error);
+      console.error("Error saving additional data:", error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
+  
 
   return (
     <Form {...form} >
