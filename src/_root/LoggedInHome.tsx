@@ -3,8 +3,16 @@ import TopBar from './pages/components/LoggedInHome/TopBar';
 import LeftPanel from './pages/components/LoggedInHome/LeftPanel';
 import RightPanel from './pages/components/LoggedInHome/RightPanel';
 import MidPanel from './pages/components/LoggedInHome/MidPanel';
+import { useUser } from '@/contexts/UserContext';
 
-function LoggedInHome() {
+const LoggedInHome: React.FC = () => {
+  const { user } = useUser(); // Access user from context
+  console.log('User', user)
+
+  if (!user) {
+    return <div>Loading...</div>; // Or show login screen
+  }
+
   return (
     <div className="h-screen flex flex-col w-screen bg-home-divider">
       {/* Top Bar */}

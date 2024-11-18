@@ -1,15 +1,20 @@
+// TopBar.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAuth, signOut } from 'firebase/auth';
+import { useUser } from '@/contexts/UserContext';
 
-function TopBar() {
+const TopBar: React.FC = () => {
+  const { user } = useUser(); // Access user from context
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isHoveredpfp, setIsHoveredpfp] = useState(false);
   const [isClosing, setIsClosing] = useState(false); // State for fade-out animation
   const [isProfileOpen, setIsProfileOpen] = useState(false); // New state for profile menu
   const menuRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null); // Ref for profile dropdown
   const navigate = useNavigate();
+  const auth = getAuth();
 
   const toggleMenu = () => {
     if (isMenuOpen) {
@@ -36,6 +41,16 @@ function TopBar() {
       setIsMenuOpen(false);
       setIsProfileOpen(false); // Close profile menu if clicked outside
     }
+  };
+
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        navigate('/');
+      })
+      .catch((error) => {
+        console.error('Error logging out:', error);
+      });
   };
 
   useEffect(() => {
@@ -65,7 +80,7 @@ function TopBar() {
         {/* Profile Picture Button with Dropdown */}
         <div ref={profileRef} className="relative">
           <img
-            src='/assets/icons/pfp on post.svg' // Your profile picture
+            src="/assets/icons/pfp on post.svg" // Your profile picture
             alt="Profile"
             className="h-10 rounded-full cursor-pointer"
             onClick={toggleProfileMenu}
@@ -84,54 +99,52 @@ function TopBar() {
                   className="w-full h-40 object-cover rounded-t-xl-1"
                 />
                 <div className="absolute bottom-3 justify-items-center w-full px-4 py-2 text-white z-10">
-                <div className='flex-col'>
-                  <div className='flex space-x-2'>
-                    <img
-                      src={'/assets/icons/pfp on post.svg'}
-                      alt="Profile"
-                      className="h-14 rounded-full cursor-pointer"
-                    />
+                  <div className="flex-col">
+                    <div className="flex space-x-2">
+                      <img
+                        src="/assets/icons/pfp on post.svg"
+                        alt="Profile"
+                        className="h-14 rounded-full cursor-pointer"
+                      />
                       <div>
-                        <div className="text-lg font-bold leading-none pt-3">Jane Doe</div>
-                        <div className="text-sm text-primary-500 leading-none">@janedoe</div>
+                        <div className="text-lg font-bold leading-none pt-3 flex space-x-1">
+                          <p>{user?.first_name}</p> 
+                          <p>{user?.last_name}</p>
+                        </div>
+                        <div className="text-sm text-primary-500 leading-none">@{user?.username}</div>
                       </div>
                     </div>
                   </div>
-                  <div className='flex space-x-12 pt-4'>
-                    <div className='flex justify-items-center space-x-1'>
-                      <div className='text-lg font-bold font-dmsans'>
-                        100
-                      </div>
-                      <div className='text-sm pt-1'>
-                        Followers
-                      </div>
+                  <div className="flex space-x-12 pt-4">
+                    <div className="flex justify-items-center space-x-1">
+                      <div className="text-lg font-bold font-dmsans">{user?.followers}</div>
+                      <div className="text-sm pt-1">Followers</div>
                     </div>
-                    <div className='flex justify-items-center space-x-1'>
-                      <div className='text-lg font-bold font-dmsans'>
-                        100
-                      </div>
-                      <div className='text-sm pt-1'>
-                        Following
-                      </div>
+                    <div className="flex justify-items-center space-x-1">
+                      <div className="text-lg font-bold font-dmsans">{user?.following}</div>
+                      <div className="text-sm pt-1">Following</div>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="flex space-x-4 px-4 py-3 hover:bg-gray-100 cursor-pointer">
-                <img 
-                src='/assets/icons/setting-icon.svg'
-                className='h-8'
-                alt="edit"
+                <img
+                  src="/assets/icons/setting-icon.svg"
+                  className="h-8"
+                  alt="edit"
                 />
                 <div className="font-semibold text-lg">Edit Profile</div>
               </div>
-              <div className="flex space-x-4 px-4 py-3 hover:bg-gray-100 rounded-b-xl cursor-pointer">
-                <img 
-                  src='/assets/icons/logout - icon.svg'
-                  className='h-8'
+              <div
+                className="flex space-x-4 px-4 py-3 hover:bg-gray-100 rounded-b-xl cursor-pointer"
+                onClick={handleLogout}
+              >
+                <img
+                  src="/assets/icons/logout - icon.svg"
+                  className="h-8"
                   alt="logout"
-                  />
-                <div className="font-semibold text-lg" onClick={() => navigate('/')}>Log Out</div>
+                />
+                <div className="font-semibold text-lg">Log Out</div>
               </div>
             </div>
           )}
@@ -154,31 +167,31 @@ function TopBar() {
 
           {isMenuOpen && (
             <div
-              className={`absolute right-0 mt-2 w-60 bg-white border border-gray-300 rounded-lg shadow-lg z-10 ${
+              className={`absolute right-0 mt-2 w-60 bg-white border border-gray-300 rounded-lg shadow-lg z-10 $(
                 isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-              } transition-all duration-300`}
+              ) transition-all duration-300`}
             >
               <ul className="flex flex-col">
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-3"
                   onClick={() => alert('Connect clicked')}
                 >
-                  <img src='/assets/icons/handshake-icon.svg' className='h-5' />
-                  <div className='font-semibold'>Connect with us</div>
+                  <img src="/assets/icons/handshake-icon.svg" className="h-5" />
+                  <div className="font-semibold">Connect with us</div>
                 </li>
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-3"
                   onClick={() => alert('Dict clicked')}
                 >
-                  <img src='/assets/icons/dictionary-icon.svg' className='h-5' />
-                  <div className='font-semibold'>Farmers' Dictionary</div>
+                  <img src="/assets/icons/dictionary-icon.svg" className="h-5" />
+                  <div className="font-semibold">Farmers' Dictionary</div>
                 </li>
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-3"
                   onClick={() => alert('Report clicked')}
                 >
-                  <img src='/assets/icons/report-icon.svg' className='h-5' />
-                  <div className='font-semibold'>Report an issue</div>
+                  <img src="/assets/icons/report-icon.svg" className="h-5" />
+                  <div className="font-semibold">Report an issue</div>
                 </li>
               </ul>
             </div>
@@ -187,6 +200,6 @@ function TopBar() {
       </div>
     </div>
   );
-}
+};
 
 export default TopBar;

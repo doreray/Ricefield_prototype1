@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import './globals.css';
-import { Routes, Route, useSearchParams } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import SigninForm from './_auth/forms/SigninForm';
 import SignupForm from './_auth/forms/SignupForm';
 import AuthLayout from './_auth/AuthLayout';
@@ -11,6 +14,7 @@ import EmailResetPassword from './_auth/forms/EmailResetPassword';
 import PreResetPassword from './_auth/forms/PreResetPassword';
 import ResetPasswordForm from './_auth/forms/ResetPassword';
 import EmailConfirmation from './_auth/forms/EmailConfirmation';
+import { UserProvider } from './contexts/UserContext';
 
 const AuthActionHandler = () => {
   const [searchParams] = useSearchParams();
@@ -25,8 +29,32 @@ const AuthActionHandler = () => {
   }
 };
 
-const App = () => {
+const App: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const auth = getAuth();
+
+  // Check authentication state only when at "/" or "/home"
+  useEffect(() => {
+    if (location.pathname === "/" || location.pathname === "/home") {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setIsLoggedIn(true);
+          if (location.pathname === "/") navigate("/home");
+        } else {
+          setIsLoggedIn(false);
+          if (location.pathname === "/home") navigate("/");
+        }
+      });
+
+      // Cleanup subscription on unmount
+      return () => unsubscribe();
+    }
+  }, [location.pathname, navigate, auth]);
+
   return (
+    <UserProvider>
     <main className="flex h-screen">
       <Routes>
         {/* Public routes */}
@@ -41,10 +69,11 @@ const App = () => {
         </Route>
 
         {/* Private routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<LoggedInHome />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={isLoggedIn ? <LoggedInHome /> : <Home />} />
       </Routes>
     </main>
+    </UserProvider>
   );
 };
 

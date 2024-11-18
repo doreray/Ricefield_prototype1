@@ -68,6 +68,7 @@ function SignupForm2() {
           first_name: data.firstname,
           major: data.major,
           grad_year: parseInt(data.gradyear),
+          uid: userBasicInfo.uid,
         };
   
          // Ensure the school selected by the user is a valid key in the schoolMap
@@ -78,7 +79,7 @@ function SignupForm2() {
   
         const userDocRef = doc(db, "schools", schoolId, "users", userBasicInfo.uid);
         await setDoc(userDocRef, userData);
-        navigate('/home');
+        navigate('/');
       }
     } catch (error) {
       console.error("Error saving additional data:", error);

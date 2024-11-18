@@ -46,3 +46,12 @@ export type INavLink = {
     username: string;
     password: string;
   };
+
+  export interface User {
+    uid: string;
+    first_name: string | null;
+    last_name: string | null;
+    username: string | null;
+    email: string | null;
+    photoURL: string | null;
+  }
