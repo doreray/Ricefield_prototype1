@@ -131,7 +131,7 @@ function TopBar() {
                   className='h-8'
                   alt="logout"
                   />
-                <div className="font-semibold text-lg">Log Out</div>
+                <div className="font-semibold text-lg" onClick={() => navigate('/')}>Log Out</div>
               </div>
             </div>
           )}

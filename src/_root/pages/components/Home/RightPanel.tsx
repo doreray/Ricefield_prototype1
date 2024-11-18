@@ -60,20 +60,25 @@ function RightPanel() {
             <button
               key={index}
               onClick={() => navigate('/sign-in')}
-              className="w-full mb-2 text-left rounded-lg overflow-hidden border border-gray-300"
+              className="w-full mb-2 text-left rounded-full overflow-hidden border border-gray-300"
               style={{
-                background: `linear-gradient(to right, #3b82f6 ${percentage}%, #e5e7eb ${percentage}%)`,
+                background: `linear-gradient(to right, #448D56 ${percentage}%, #ffffff ${percentage}%)`,
               }}
             >
-              <div className="flex justify-between px-4 py-2">
+             <div className="flex justify-between px-4 py-2">
                 <span
                   className={`text-sm ${
-                    userVote === index ? 'font-bold text-black' : 'text-gray-800'
+                    userVote === index ? 'font-bold text-white' : 'text-black'
                   }`}
                 >
                   {option.option}
                 </span>
-                <span className="text-sm text-gray-700">{percentage}%</span>
+                <span 
+                className={`text-sm ${
+                  userVote === index ? ' text-white' : 'text-black'
+                  }`}>
+                  {percentage}%
+                </span>
               </div>
             </button>
           );
