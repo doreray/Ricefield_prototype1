@@ -42,7 +42,7 @@ function LeftPanel() {
             isSpacesMenuOpen ? 'max-h-96 opacity-100 rounded-lg' : 'max-h-0 opacity-0'
           }`}
         >
-          {['News', 'Questions', 'Rant', 'Confession', 'Meme'].map((space, index) => (
+          {['News', 'Questions', 'Rant', 'Confession', 'Memes'].map((space, index) => (
             <li
               key={space}
               className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-100 cursor-pointer text-black"

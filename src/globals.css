@@ -387,6 +387,15 @@
   .select-option--is-selected:hover {
     @apply bg-option-selected-hover !important;  /* Darker background on hover */
   }
+  .middle-part{
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    width: 48rem;
+  }
+
+  .middle-part::-webkit-scrollbar{
+    display: none; /* Chrome, Safari and Opera */
+  }
 }
 
 @layer base {

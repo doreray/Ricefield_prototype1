@@ -147,7 +147,7 @@ const ResetPasswordForm = () => {
 
           {error && <p className="text-red text-center mt-4">{error}</p>}
 
-          <Button type="submit" className="shad-button_primary rounded-full">
+          <Button type="submit" className="shad-button_primary rounded-full pt-2">
             {isLoading ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...

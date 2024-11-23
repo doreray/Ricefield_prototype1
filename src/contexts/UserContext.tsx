@@ -4,6 +4,7 @@ import { getFirestore, collection, getDocs, query, where } from 'firebase/firest
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 interface User {
+  uid: string;
   first_name: string;
   last_name: string;
   username: string;
@@ -69,6 +70,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
               const userData = userDoc.data();
 
               setUser({
+                uid: userData?.uid || 'Unknown',
                 first_name: userData?.first_name || 'Unknown',
                 last_name: userData?.last_name || 'Unknown',
                 username: userData?.username || 'unknown_username',

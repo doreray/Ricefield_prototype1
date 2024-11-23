@@ -7,7 +7,7 @@ import { useUser } from '@/contexts/UserContext';
 
 const LoggedInHome: React.FC = () => {
   const { user } = useUser(); // Access user from context
-  console.log('User', user)
+  console.log('User', user);
 
   if (!user) {
     return <div>Loading...</div>; // Or show login screen
@@ -19,16 +19,21 @@ const LoggedInHome: React.FC = () => {
       <div className="flex-shrink-0">
         <TopBar />
       </div>
+
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel */}
         <div className="hidden md:block w-72 flex-shrink-0 overflow-y-auto">
           <LeftPanel />
         </div>
-        {/* Middle Panel */}
-        <div className="flex-1 overflow-y-auto p-2">
-          <MidPanel />
+
+        {/* Middle Panel - Fixed size and centered */}
+        <div className="flex-1 flex justify-center items-start overflow-y-auto middle-part">
+          <div className="w-[700px] max-w-full"> {/* Fixed width for middle panel */}
+            <MidPanel />
+          </div>
         </div>
+
         {/* Right Panel */}
         <div className="hidden lg:block w-72 flex-shrink-0 overflow-y-auto">
           <RightPanel />
@@ -36,6 +41,6 @@ const LoggedInHome: React.FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default LoggedInHome;

@@ -18,7 +18,7 @@ function Home() {
           <LeftPanel />
         </div>
         {/* Middle Panel */}
-        <div className="flex-1 overflow-y-auto p-2">
+        <div className="flex-1 overflow-y-auto p-2 h-full"> {/* Ensure middle panel takes full available height */}
           <MidPanel />
         </div>
         {/* Right Panel */}
