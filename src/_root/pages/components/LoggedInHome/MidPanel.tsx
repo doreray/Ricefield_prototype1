@@ -178,7 +178,9 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace }) => {
             <span className="pr-2">in</span>
             <div
               className={`font-medium text-sm cursor-pointer flex items-center justify-between bg-white p-1 pl-7 rounded-full relative w-40 ${
-                isSpaceError ? 'ring-2 ring-red' : 'border border-primary-500' }`}
+                isSpaceError ? 'border border-red ring-1 ring-red' : 'border border-primary-500' } ${
+                isDropdownOpen ? 'ring-1 ring-primary-500' : ''
+                }`}
               onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
               {selectedSpace || 'Select a Space'}
