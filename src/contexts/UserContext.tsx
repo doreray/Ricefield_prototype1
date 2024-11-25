@@ -8,6 +8,7 @@ interface User {
   first_name: string;
   last_name: string;
   username: string;
+  school: string;
   followers: number;
   following: number;
 }
@@ -74,6 +75,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 first_name: userData?.first_name || 'Unknown',
                 last_name: userData?.last_name || 'Unknown',
                 username: userData?.username || 'unknown_username',
+                school: userData?.school || 'unknown',
                 followers: userData?.followers || 0,
                 following: userData?.following || 0,
               });

@@ -68,6 +68,7 @@ function SignupForm2() {
           first_name: data.firstname,
           major: data.major,
           grad_year: parseInt(data.gradyear),
+          school: data.school,
           uid: userBasicInfo.uid,
         };
   

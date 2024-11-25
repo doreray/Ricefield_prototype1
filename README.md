@@ -14,6 +14,7 @@ npm install react-password-checklist
 npm install @shadcn/ui
 npm install tailwindcss
 npm install js-cookie
+npm install date-fns
 ```
 
 Currently, two official plugins are available:
