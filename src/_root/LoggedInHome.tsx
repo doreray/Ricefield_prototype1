@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import TopBar from './pages/components/LoggedInHome/TopBar';
 import LeftPanel from './pages/components/LoggedInHome/LeftPanel';
 import RightPanel from './pages/components/LoggedInHome/RightPanel';
-import MidPanel from './pages/components/LoggedInHome/MidPanel';
+import MidPanel from './pages/components/LoggedInHome/MidPanel/MidPanel';
 import { useUser } from '@/contexts/UserContext';
 
 const LoggedInHome: React.FC = () => {
@@ -23,7 +23,7 @@ const LoggedInHome: React.FC = () => {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel */}
-        <div className="hidden md:block w-72 flex-shrink-0 overflow-y-auto">
+        <div className="hidden lg:block w-72 flex-shrink-0 overflow-y-auto">
           <LeftPanel setFilteredSpace={setFilteredSpace} />
         </div>
 
@@ -35,7 +35,7 @@ const LoggedInHome: React.FC = () => {
         </div>
 
         {/* Right Panel */}
-        <div className="hidden lg:block w-72 flex-shrink-0 overflow-y-auto">
+        <div className="hidden xl:block w-72 flex-shrink-0 overflow-y-auto">
           <RightPanel />
         </div>
       </div>
