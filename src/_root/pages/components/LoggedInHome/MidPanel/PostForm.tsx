@@ -58,12 +58,19 @@ const PostForm: React.FC = () => {
         space: selectedSpace,
         title,
         user: {
-          firstName: user?.first_name || 'Anonymous',
-          lastName: user?.last_name || '',
+          first_name: user?.first_name || 'Anonymous',
+          last_name: user?.last_name || '',
           username: user?.username || 'unknown',
           school: user?.school || 'unknown',
         },
+        bookmark: false,
       });
+
+      // Initialize subcollections for the post
+      const upvotesCollection = collection(postRef, 'upvotes');
+      const downvotesCollection = collection(postRef, 'downvotes');
+      const repliesCollection = collection(postRef, 'replies');
+      const recookCollection = collection(postRef, 'recook');
 
       setNewPost('');
       setTitle('');

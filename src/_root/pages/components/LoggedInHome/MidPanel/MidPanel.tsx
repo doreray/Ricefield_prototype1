@@ -1,20 +1,20 @@
-// src/components/MidPanel.tsx
-import React, { useState, useEffect, useRef } from 'react';
+// MidPanel.tsx
+import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase/config';
-import { collection, setDoc, serverTimestamp, onSnapshot, doc } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { useUser } from '@/contexts/UserContext'; // To get the user data
-import { formatDistanceToNow } from 'date-fns';
-import { Button } from '@/components/ui/button';
 import PostForm from './PostForm';
 import PostItem from './PostItem';
+import ReplyPanel from './ReplyPanel';
 
 interface User {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   username: string;
   uid: string;
   school: string;
 }
+
 interface Post {
   id: string;
   owner: string;
@@ -23,15 +23,18 @@ interface Post {
   space: string;
   title: string;
   user: User;
+  parentId?: string; // Optional field for parent post (if it's a reply)
 }
 
 interface MidPanelProps {
   filteredSpace: string;
+  setFilteredSpace: (space: string) => void;
 }
 
-const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace }) => {
+const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) => {
   const { user } = useUser();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Track the selected post
 
   useEffect(() => {
     const fetchPosts = () => {
@@ -75,22 +78,43 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace }) => {
     const timestampA = a.timestamp?.seconds || 0;
     const timestampB = b.timestamp?.seconds || 0;
 
+    if (timestampA === 0 && timestampB === 0) {
+      return 0;
+    }
+
+    if (timestampA === 0) {
+      return -1;
+    }
+    if (timestampB === 0) {
+      return 1;
+    }
+
     return timestampB - timestampA;
   });
 
   return (
     <div className="flex flex-col space-y-4 px-4 py-6 overflow-hidden">
-      <PostForm />
-      <div className="space-y-4 overflow-y-auto flex-1">
-        {sortedPosts.length === 0 && (
-          <div className="text-center text-gray-500">
-            No posts available. Be the first to post!
-          </div>
-        )}
-        {sortedPosts.map((post) => (
-          <PostItem key={post.id} post={post} />
-        ))}
-      </div>
+      {selectedPost ? (
+        <ReplyPanel selectedPost={selectedPost} setSelectedPost={setSelectedPost} />
+      ) : (
+        <div className="space-y-4 overflow-y-auto flex-1">
+          <PostForm />
+          {sortedPosts.length === 0 && (
+            <div className="text-center text-gray-500">
+              No posts available. Be the first to post!
+            </div>
+          )}
+          {sortedPosts.map((post) => (
+            <PostItem
+              key={post.id}
+              post={post}
+              currentUser={user!}
+              setFilteredSpace={setFilteredSpace}
+              onReplyClick={() => setSelectedPost(post)} // Handle reply click
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -30,7 +30,7 @@ const LoggedInHome: React.FC = () => {
         {/* Middle Panel - Fixed size and centered */}
         <div className="flex-1 flex justify-center items-start overflow-y-auto middle-part">
           <div className="w-[700px] max-w-full">
-            <MidPanel filteredSpace={filteredSpace} />
+            <MidPanel filteredSpace={filteredSpace} setFilteredSpace={setFilteredSpace} />
           </div>
         </div>
 
