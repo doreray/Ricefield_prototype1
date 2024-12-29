@@ -1,4 +1,3 @@
-// MidPanel.tsx
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase/config';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -92,6 +91,26 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) 
     return timestampB - timestampA;
   });
 
+  // Function to handle selecting a post for reply
+  const handleReplyClick = (post: Post) => {
+    setSelectedPost(post);
+  };
+
+  // Group posts by parentId to display replies under original posts
+  const groupedPosts = sortedPosts.reduce((acc, post) => {
+    if (post.parentId) {
+      // If post is a reply, add it to its parent's replies array
+      const parent = acc.find((item) => item.id === post.parentId);
+      if (parent) {
+        parent.replies = parent.replies ? [...parent.replies, post] : [post];
+      }
+    } else {
+      // If post is an original post, add it to the grouped array
+      acc.push({ ...post, replies: [] });
+    }
+    return acc;
+  }, [] as (Post & { replies: Post[] })[]);
+
   return (
     <div className="flex flex-col space-y-2 px-4 py-6 overflow-hidden">
       {selectedPost ? (
@@ -99,19 +118,33 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) 
       ) : (
         <div className="space-y-2 overflow-y-auto flex-1 py-1 px-1">
           <PostForm />
-          {sortedPosts.length === 0 && (
+          {groupedPosts.length === 0 && (
             <div className="text-center text-gray-500">
               No posts available. Be the first to post!
             </div>
           )}
-          {sortedPosts.map((post) => (
-            <PostItem
-              key={post.id}
-              post={post}
-              currentUser={user!}
-              setFilteredSpace={setFilteredSpace}
-              onReplyClick={() => setSelectedPost(post)} // Handle reply click
-            />
+          {groupedPosts.map((post) => (
+            <div key={post.id}>
+              <PostItem
+                post={post}
+                currentUser={user!}
+                setFilteredSpace={setFilteredSpace}
+                onReplyClick={() => handleReplyClick(post)} // Handle reply click
+              />
+              {post.replies.length > 0 && (
+                <div className="ml-4 space-y-2">
+                  {post.replies.map((reply) => (
+                    <PostItem
+                      key={reply.id}
+                      post={reply}
+                      currentUser={user!}
+                      setFilteredSpace={setFilteredSpace}
+                      onReplyClick={() => handleReplyClick(reply)} // Handle reply click
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}

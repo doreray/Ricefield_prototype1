@@ -27,7 +27,7 @@ interface PostItemProps {
   post: Post;
   currentUser: User;
   setFilteredSpace: (space: string) => void;
-  onReplyClick: () => void; // Callback for reply click
+  onReplyClick: (replyId: string) => void; // Callback for reply click
 }
 
 const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace, onReplyClick }) => {
@@ -232,6 +232,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
                       .replace(' years', 'y')
                       .replace('about ', '')
                       .replace('less than a minute', '0m')
+                      .replace('less than am', '0m')
                   : 'Freshly Cooked'}
               </div>
             </div>
@@ -282,7 +283,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
         </div>
           <div 
           className='bg-gray-200 rounded-full flex items-center py-2 px-3 space-x-2 font-bold hover:cursor-pointer'
-          onClick={() => onReplyClick()}>  
+          onClick={() => onReplyClick(post.id)}>  
           <img src='/assets/icons/reply.svg'/>
           <div>Reply</div> 
           </div>
