@@ -40,7 +40,7 @@ function RightPanel() {
   const totalVotes = pollOptions.reduce((sum, opt) => sum + opt.votes, 0);
 
   return (
-    <div className="w-72 bg-home-divider pt-6 flex flex-col items-center space-y-4 pr-2">
+    <div className="w-72 bg-home-divider pt-7 flex flex-col items-center space-y-4 pr-2">
       <div className="w-68 border border-slate-200 rounded-lg bg-white pt-1 pl-5 pr-5 pb-3">
         {/* Question */}
         <div className="flex space-x-1 mb-4">

@@ -93,11 +93,11 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) 
   });
 
   return (
-    <div className="flex flex-col space-y-4 px-4 py-6 overflow-hidden">
+    <div className="flex flex-col space-y-2 px-4 py-6 overflow-hidden">
       {selectedPost ? (
         <ReplyPanel selectedPost={selectedPost} setSelectedPost={setSelectedPost} />
       ) : (
-        <div className="space-y-4 overflow-y-auto flex-1">
+        <div className="space-y-2 overflow-y-auto flex-1 py-1 px-1">
           <PostForm />
           {sortedPosts.length === 0 && (
             <div className="text-center text-gray-500">

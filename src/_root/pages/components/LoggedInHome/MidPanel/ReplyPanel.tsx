@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase/config';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { useUser } from '@/contexts/UserContext'; // To get the user data
 import PostItem from './PostItem';
+import ReplyForm from './ReplyForm';
 
 interface User {
   first_name: string;
@@ -32,12 +33,9 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
   const { user } = useUser();
   const [replies, setReplies] = useState<Post[]>([]);
 
-  // Fetch replies for the selected post
+  // Fetch replies for the selected post from the replies subcollection
   useEffect(() => {
-    const repliesRef = query(
-      collection(db, 'spaces', selectedPost.space, 'posts'),
-      where('parentId', '==', selectedPost.id) // Fetch replies where parentId matches the selected post
-    );
+    const repliesRef = collection(db, 'spaces', selectedPost.space, 'posts', selectedPost.id, 'replies');
 
     const unsubscribeReplies = onSnapshot(repliesRef, (snapshot) => {
       const repliesData: Post[] = snapshot.docs.map((doc) => ({
@@ -50,7 +48,7 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
     });
 
     return () => {
-      unsubscribeReplies();
+      unsubscribeReplies(); // Clean up the subscription
     };
   }, [selectedPost]);
 
@@ -60,24 +58,32 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
   };
 
   return (
-    <div className="flex flex-col space-y-4 px-4 py-6 overflow-hidden">
-      <button className="text-blue-500" onClick={() => setSelectedPost(null)}>
-        Back to Posts
-      </button>
+    <div className="flex flex-col space-y-2 px-4 py-6 overflow-hidden">
+      <div className='bg-white px-4 py-2 rounded-lg border border-slate-200 flex space-x-2 items-center'>
+        <img className='hover:cursor-pointer h-5' 
+          src='/assets/icons/go_back_icon.svg'
+          onClick={() => setSelectedPost(null)} />
+        <div className='font-bold text-lg hover:cursor-pointer'>{selectedPost.title}</div>
+      </div>
+      <div className="space-y-2 overflow-y-auto flex-1 py-1 px-1">
+        {/* Display the selected post */}
+        <PostItem
+          post={selectedPost}
+          currentUser={user!}
+          setFilteredSpace={() => {}}
+          onReplyClick={handleReplyClick} // Pass onReplyClick to PostItem
+        />
 
-      <div className="space-y-4 overflow-y-auto flex-1">
-          {/* Display the selected post */}
-          <PostItem
-            post={selectedPost}
-            currentUser={user!}
-            setFilteredSpace={() => {}}
-            onReplyClick={handleReplyClick} // Pass onReplyClick to PostItem
-          />
+        {/* Reply Form */}
+        <ReplyForm 
+          parentPostId={selectedPost.id} 
+          space={selectedPost.space} 
+          postOwnerUsername={selectedPost.user?.username || 'unknown'} 
+        />
 
         {/* Display the replies */}
         {replies.length > 0 && (
-          <div className="space-y-4 mt-4">
-            <h3 className="font-bold text-lg">Replies:</h3>
+          <div className="space-y-2 mt-4">
             {replies.map((reply) => (
               <PostItem
                 key={reply.id}
