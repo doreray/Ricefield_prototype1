@@ -18,7 +18,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({ setFilteredSpace }) => {
   };
 
   return (
-    <div className="w-72 bg-home-divider pt-6 flex flex-col items-center space-y-4 pl-2">
+    <div className="w-72 bg-home-divider pt-7 flex flex-col items-center space-y-4 pl-2">
       {/* Home Button */}
       <div>
         <Button
