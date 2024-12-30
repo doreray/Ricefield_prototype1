@@ -187,7 +187,7 @@ const PostVotes: React.FC<PostVotesProps> = ({ post, currentUser }) => {
         src={upvoted ? "/assets/icons/upvote_chosen.svg" : "/assets/icons/upvote_default.svg"}
         onClick={handleUpvoteClick}
       />
-      <div className="font-dmsans font-bold">{upvotesCount - downvotesCount}</div>
+      <div className="font-dmsans font-bold">{voteDifference}</div>
       <img
         className="hover:cursor-pointer h-5"
         alt="Downvote"

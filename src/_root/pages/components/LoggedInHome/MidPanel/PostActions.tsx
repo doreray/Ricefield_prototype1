@@ -89,7 +89,7 @@ const PostActions: React.FC<PostActionsProps> = ({ post, currentUser, setPopupVi
                                 onClick={() => setPopupVisible(true)}
                                 className="px-4 py-2 text-rose-600 font-bold cursor-pointer flex items-center space-x-2"
                             >
-                                <img src='assets/icons/trash_icon.svg' className='h-6 ml-0.5' />
+                                <img src='/assets/icons/trash_icon.svg' className='h-6 ml-0.5' />
                                 <div>
                                     Delete post
                                 </div>
@@ -99,7 +99,7 @@ const PostActions: React.FC<PostActionsProps> = ({ post, currentUser, setPopupVi
                             onClick={handleReportPost}
                             className="px-4 py-2 text-yellow-500 font-bold cursor-pointer flex items-center space-x-2"
                         >
-                            <img src='assets/icons/report_icon.svg' className='h-7' />
+                            <img src='/assets/icons/report_icon.svg' className='h-7' />
                             <div>
                                 Report
                             </div>

@@ -15,6 +15,7 @@ import PreResetPassword from './_auth/forms/PreResetPassword';
 import ResetPasswordForm from './_auth/forms/ResetPassword';
 import EmailConfirmation from './_auth/forms/EmailConfirmation';
 import { UserProvider } from './contexts/UserContext';
+import ReplyPanel from './_root/pages/components/LoggedInHome/MidPanel/ReplyPanel';
 
 const AuthActionHandler = () => {
   const [searchParams] = useSearchParams();
@@ -69,8 +70,12 @@ const App: React.FC = () => {
         </Route>
 
         {/* Private routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={isLoggedIn ? <LoggedInHome /> : <Home />} />
+        <Route path="/" element={isLoggedIn ? <LoggedInHome /> : <Home />} />
+
+        <Route path="/home" element={isLoggedIn ? <LoggedInHome /> : <Home />}>
+          {/* Nested route for posts */}
+          <Route path="/home/spaces/:space/posts/:postId" element={<ReplyPanel />} />
+        </Route>
       </Routes>
     </main>
     </UserProvider>

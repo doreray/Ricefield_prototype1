@@ -2,16 +2,22 @@ import React, { useState } from 'react';
 import TopBar from './pages/components/LoggedInHome/TopBar';
 import LeftPanel from './pages/components/LoggedInHome/LeftPanel';
 import RightPanel from './pages/components/LoggedInHome/RightPanel';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'; // To check the current route
 import MidPanel from './pages/components/LoggedInHome/MidPanel/MidPanel';
+import ReplyPanel from './pages/components/LoggedInHome/MidPanel/ReplyPanel';
 import { useUser } from '@/contexts/UserContext';
 
 const LoggedInHome: React.FC = () => {
   const { user } = useUser(); // Access user from context
   const [filteredSpace, setFilteredSpace] = useState<string>('');
+  const location = useLocation(); // Get the current route
 
   if (!user) {
     return <div>Loading...</div>; // Or show login screen
   }
+
+  // Check if we are on a post reply route
+  const isReplyRoute = location.pathname.includes('/spaces/') && location.pathname.includes('/posts/');
 
   return (
     <div className="h-screen flex flex-col w-screen bg-home-divider">
@@ -27,10 +33,11 @@ const LoggedInHome: React.FC = () => {
           <LeftPanel setFilteredSpace={setFilteredSpace} />
         </div>
 
-        {/* Middle Panel - Fixed size and centered */}
+        {/* Middle Panel */}
         <div className="flex-1 flex justify-center items-start overflow-y-auto middle-part">
           <div className="w-[700px] max-w-full">
-            <MidPanel filteredSpace={filteredSpace} setFilteredSpace={setFilteredSpace} />
+            {/* Conditionally render MidPanel or ReplyPanel based on the route */}
+            {isReplyRoute ? <ReplyPanel /> : <MidPanel filteredSpace={filteredSpace} setFilteredSpace={setFilteredSpace} />}
           </div>
         </div>
 
