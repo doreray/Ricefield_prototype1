@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/firebase/config';
-import { doc, collection, getDoc, setDoc, serverTimestamp, getDocs } from 'firebase/firestore';
+import { doc, collection, getDoc, setDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
+import DeleteConfirmationPopup from './DeleteConfirmationPopup'; // Import the DeleteConfirmationPopup component
 
 interface User {
   first_name: string;
@@ -42,13 +43,48 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
   const [downvotesCount, setDownvotesCount] = useState<number>(0);
   const [repliesCount, setRepliesCount] = useState<number>(0);
 
-  // Check if the user has upvoted or downvoted the post
+  const [isPopupVisible, setPopupVisible] = useState(false); // State to handle the visibility of the delete confirmation popup
+  const [isDropdownVisible, setDropdownVisible] = useState(false); // State to toggle the dropdown menu
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownVisible(false);
+      }
+    };
+  
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  // Check num of replies
+  useEffect(() => {
+    const fetchRepliesCount = async () => {
+      try {
+        const repliesQuery = query(
+          collection(db, 'spaces', post.space, 'posts'),
+          where('parentId', '==', post.id)
+        );
+
+        const repliesSnapshot = await getDocs(repliesQuery);
+        setRepliesCount(repliesSnapshot.size);
+      } catch (error) {
+        console.error('Error fetching replies count:', error);
+      }
+    };
+
+    fetchRepliesCount();
+  }, [post.id, post.space]);
+
   useEffect(() => {
     if (!currentUser || !post.id) return;
 
     const checkUserVotes = async () => {
       try {
-        // Check if the user has upvoted
         const upvoteDocRef = doc(
           db,
           'spaces',
@@ -60,10 +96,8 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
         );
         const upvoteDoc = await getDoc(upvoteDocRef);
 
-        // Check if the upvote document contains both 'uid' and 'username'
-      const hasUpvote = upvoteDoc.exists() && upvoteDoc.data().userId && upvoteDoc.data().username;
+        const hasUpvote = upvoteDoc.exists() && upvoteDoc.data().userId && upvoteDoc.data().username;
 
-        // Check if the user has downvoted
         const downvoteDocRef = doc(
           db,
           'spaces',
@@ -75,10 +109,8 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
         );
         const downvoteDoc = await getDoc(downvoteDocRef);
 
-        // Check if the downvote document contains both 'uid' and 'username'
-      const hasDownvote = downvoteDoc.exists() && downvoteDoc.data().userId && downvoteDoc.data().username;
+        const hasDownvote = downvoteDoc.exists() && downvoteDoc.data().userId && downvoteDoc.data().username;
 
-        // Update state based on the existence of these fields
         setUpvoted(hasUpvote);
         setDownvoted(hasDownvote);
       } catch (error) {
@@ -92,63 +124,56 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
   useEffect(() => {
     const fetchVotesCount = async () => {
       try {
-        // Fetch upvotes count
         const upvotesSnapshot = await getDocs(
           collection(db, 'spaces', post.space, 'posts', post.id, 'upvotes')
         );
         const validUpvotes = upvotesSnapshot.docs.filter((doc) => {
           const data = doc.data();
-          return data.userId && data.username; // Ensure both 'userId' and 'username' fields exist
+          return data.userId && data.username;
         });
-  
-        // Fetch downvotes count
+
         const downvotesSnapshot = await getDocs(
           collection(db, 'spaces', post.space, 'posts', post.id, 'downvotes')
         );
         const validDownvotes = downvotesSnapshot.docs.filter((doc) => {
           const data = doc.data();
-          return data.userId && data.username; // Ensure both 'userId' and 'username' fields exist
+          return data.userId && data.username;
         });
-  
-        // Set the count based on the filtered documents
+
         setUpvotesCount(validUpvotes.length);
         setDownvotesCount(validDownvotes.length);
       } catch (error) {
         console.error('Error fetching votes count:', error);
       }
     };
-  
+
     fetchVotesCount();
   }, [post.id, post.space]);
 
   var voteDifference = upvotesCount - downvotesCount;
 
-  // Handle upvote click
   const handleUpvoteClick = async () => {
     if (!currentUser) return;
-  
+
     try {
       const upvoteDocRef = doc(
         collection(db, 'spaces', post.space, 'posts', post.id, 'upvotes'),
         currentUser.uid
       );
-  
+
       if (upvoted) {
-        // Remove the upvote
         await setDoc(upvoteDocRef, {}, { merge: false });
         setUpvoted(false);
-        setUpvotesCount(upvotesCount - 1); // Decrement count locally
+        setUpvotesCount(upvotesCount - 1);
       } else {
-        // Add the upvote
         await setDoc(upvoteDocRef, {
           userId: currentUser.uid,
           timestamp: serverTimestamp(),
           username: currentUser.username,
         });
         setUpvoted(true);
-        setUpvotesCount(upvotesCount + 1); // Increment count locally
-  
-        // Remove downvote if present
+        setUpvotesCount(upvotesCount + 1);
+
         if (downvoted) {
           const downvoteDocRef = doc(
             collection(db, 'spaces', post.space, 'posts', post.id, 'downvotes'),
@@ -156,39 +181,36 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
           );
           await setDoc(downvoteDocRef, {}, { merge: false });
           setDownvoted(false);
-          setDownvotesCount(downvotesCount - 1); // Decrement downvotes locally
+          setDownvotesCount(downvotesCount - 1);
         }
       }
     } catch (error) {
       console.error('Error handling upvote:', error);
     }
   };
-  
+
   const handleDownvoteClick = async () => {
     if (!currentUser) return;
-  
+
     try {
       const downvoteDocRef = doc(
         collection(db, 'spaces', post.space, 'posts', post.id, 'downvotes'),
         currentUser.uid
       );
-  
+
       if (downvoted) {
-        // Remove the downvote
         await setDoc(downvoteDocRef, {}, { merge: false });
         setDownvoted(false);
-        setDownvotesCount(downvotesCount - 1); // Decrement count locally
+        setDownvotesCount(downvotesCount - 1);
       } else {
-        // Add the downvote
         await setDoc(downvoteDocRef, {
           userId: currentUser.uid,
           timestamp: serverTimestamp(),
           username: currentUser.username,
         });
         setDownvoted(true);
-        setDownvotesCount(downvotesCount + 1); // Increment count locally
-  
-        // Remove upvote if present
+        setDownvotesCount(downvotesCount + 1);
+
         if (upvoted) {
           const upvoteDocRef = doc(
             collection(db, 'spaces', post.space, 'posts', post.id, 'upvotes'),
@@ -196,7 +218,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
           );
           await setDoc(upvoteDocRef, {}, { merge: false });
           setUpvoted(false);
-          setUpvotesCount(upvotesCount - 1); // Decrement upvotes locally
+          setUpvotesCount(upvotesCount - 1);
         }
       }
     } catch (error) {
@@ -204,27 +226,35 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
     }
   };
 
-  // Handle button click for filtering posts by space
   const handleButtonClick = () => {
-    setFilteredSpace(post.space); // Update the filteredSpace when the button is clicked
+    setFilteredSpace(post.space);
+  };
+
+  const handleDeletePost = async () => {
+    // Handle post deletion logic here
+  };
+
+  const handleReportPost = () => {
+    // Handle post reporting logic here
   };
 
   return (
-    <div key={post.id} className="bg-white p-4 rounded-lg border border-slate-200">
+    <div key={post.id} className="bg-white p-4 rounded-lg border border-slate-200" ref={dropdownRef}>
       <div className="flex items-center space-x-2">
         <img src="/assets/icons/pfp on post.svg" alt="Profile" className="h-10 cursor-pointer" />
         <div className="flex items-center justify-between w-full">
           <div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-1 h-4">
               <div className="font-bold cursor-pointer">
                 {post.user?.first_name || 'Anonymous'} {post.user?.last_name || ''}
               </div>
-              <div className="text-sm text-primary-500">@{post.user?.username || 'unknown'}</div>
+              <div className="text-primary-500">@{post.user?.username || 'unknown'}</div>
               <div className="text-sm text-gray-400">
                 • {post.timestamp
                   ? formatDistanceToNow(new Date(post.timestamp.seconds * 1000))
                       .replace(' minutes', 'm')
                       .replace(' minute', 'm')
+                      .replace(' hour', 'h')
                       .replace(' hours', 'h')
                       .replace(' days', 'd')
                       .replace(' day', 'd')
@@ -245,15 +275,42 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
             >
               {post.space.charAt(0).toUpperCase() + post.space.slice(1)}
             </Button>
-            <img
-              onMouseEnter={() => setHoveredPostId(post.id)}
-              onMouseLeave={() => setHoveredPostId(null)}
-              src={hoveredPostId === post.id
-                ? '/assets/icons/three dot (hover).svg'
-                : '/assets/icons/three dot (default).svg'}
-              alt="More"
-              className="h-8 w-8 cursor-pointer"
-            />
+            <div>
+              <img
+                onMouseEnter={() => setHoveredPostId(post.id)}
+                onMouseLeave={() => setHoveredPostId(null)}
+                src={hoveredPostId === post.id
+                  ? '/assets/icons/three dot (hover).svg'
+                  : '/assets/icons/three dot (default).svg'}
+                alt="More"
+                className="h-8 w-8 cursor-pointer"
+                onClick={() => setDropdownVisible((prev) => !prev)} // Show the dropdown on click
+              />
+              {isDropdownVisible && (
+                <div className="absolute bg-white shadow-md border border-gray-200 rounded-lg w-40">
+                  {post.owner === currentUser.uid && (
+                    <div
+                      onClick={() => setPopupVisible(true)}
+                      className="px-4 py-2 text-rose-600 font-bold cursor-pointer flex items-center space-x-2"
+                    >
+                      <img src='assets/icons/trash_icon.svg' className='h-6 ml-0.5'/>
+                      <div>
+                      Delete post
+                      </div>
+                    </div>
+                  )}
+                  <div
+                    onClick={handleReportPost}
+                    className="px-4 py-2 text-yellow-500 font-bold cursor-pointer flex items-center space-x-2"
+                  >
+                    <img src='assets/icons/report_icon.svg' className='h-7'/>
+                      <div>
+                      Report
+                      </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -262,34 +319,41 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
       {post.image && <img className="h-8 mt-2" src={post.image} alt="Post image" />}
       <div className="flex justify-between mt-2 px-12">
         <div className="flex space-x-4">
-        <div className='bg-gray-200 flex space-x-2 rounded-full items-center py-2 px-3'>
-          <img
-            className='hover:cursor-pointer h-5'
-            alt="Upvote"
-            src={upvoted ? "/assets/icons/upvote_chosen.svg" : (upvoteHovered ? "/assets/icons/upvote_hover.svg" : "/assets/icons/upvote_default.svg")}
-            onMouseEnter={() => setUpvoteHovered(true)}
-            onMouseLeave={() => setUpvoteHovered(false)}
-            onClick={handleUpvoteClick}
-            />
-            <div className='font-dmsans font-bold'>{voteDifference}</div>
+          <div className="bg-gray-200 flex space-x-2 rounded-full items-center py-2 px-3">
             <img
-            className='hover:cursor-pointer h-5'
-            alt="Downvote"
-            src={downvoted ? "/assets/icons/downvote_chosen.svg" : (downvoteHovered ? "/assets/icons/downvote_hover.svg" : "/assets/icons/downvote_default.svg")}
-            onMouseEnter={() => setDownvoteHovered(true)}
-            onMouseLeave={() => setDownvoteHovered(false)}
-            onClick={handleDownvoteClick}
+              className="hover:cursor-pointer h-5"
+              alt="Upvote"
+              src={upvoted ? "/assets/icons/upvote_chosen.svg" : (upvoteHovered ? "/assets/icons/upvote_hover.svg" : "/assets/icons/upvote_default.svg")}
+              onMouseEnter={() => setUpvoteHovered(true)}
+              onMouseLeave={() => setUpvoteHovered(false)}
+              onClick={handleUpvoteClick}
             />
-        </div>
-          <div 
-          className='bg-gray-200 rounded-full flex items-center py-2 px-3 space-x-2 font-bold hover:cursor-pointer'
-          onClick={() => onReplyClick(post.id)}>  
-          <img src='/assets/icons/reply.svg'/>
-          <div>Reply</div> 
+            <div className="font-dmsans font-bold">{voteDifference}</div>
+            <img
+              className="hover:cursor-pointer h-5"
+              alt="Downvote"
+              src={downvoted ? "/assets/icons/downvote_chosen.svg" : (downvoteHovered ? "/assets/icons/downvote_hover.svg" : "/assets/icons/downvote_default.svg")}
+              onMouseEnter={() => setDownvoteHovered(true)}
+              onMouseLeave={() => setDownvoteHovered(false)}
+              onClick={handleDownvoteClick}
+            />
           </div>
-          {/* <Button onClick={() => handleAction('recook')}>Recook</Button> */}
+          <div
+            className="bg-gray-200 rounded-full flex items-center py-2 px-3 space-x-2 font-bold hover:cursor-pointer"
+            onClick={() => onReplyClick(post.id)}
+          >
+            <img className="h-5" src="/assets/icons/reply.svg" />
+            <div className="font-dmsans">{repliesCount}</div>
+          </div>
         </div>
       </div>
+
+      {isPopupVisible && (
+        <DeleteConfirmationPopup
+          onCancel={() => setPopupVisible(false)}
+          onDelete={handleDeletePost} // Pass delete handler to the popup
+        />
+      )}
     </div>
   );
 };

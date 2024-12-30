@@ -83,12 +83,6 @@ const PostForm: React.FC = () => {
         bookmark: false,
       });
 
-      // Initialize subcollections for the post
-      const upvotesCollection = collection(postRef, 'upvotes');
-      const downvotesCollection = collection(postRef, 'downvotes');
-      const repliesCollection = collection(postRef, 'replies');
-      const recookCollection = collection(postRef, 'recook');
-
       setNewPost('');
       setTitle('');
     } catch (error) {

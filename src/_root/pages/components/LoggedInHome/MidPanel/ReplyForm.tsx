@@ -45,20 +45,6 @@ const handleReplySubmit = async () => {
       space,
     });
 
-    // Optionally, you can also create a reply in the "replies" subcollection if needed:
-    const replyRef = doc(collection(db, 'spaces', space, 'posts', parentPostId, 'replies'));
-    await setDoc(replyRef, {
-      owner: user?.uid,
-      content: replyContent,
-      timestamp: serverTimestamp(),
-      user: {
-        first_name: user?.first_name || 'Anonymous',
-        last_name: user?.last_name || '',
-        username: user?.username || 'unknown',
-        school: user?.school || 'unknown',
-      },
-    });
-
     setReplyContent(''); // Clear the reply input after submission
   } catch (error) {
     console.error('Error creating reply: ', error);

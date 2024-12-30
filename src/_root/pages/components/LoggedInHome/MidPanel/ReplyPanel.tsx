@@ -34,10 +34,12 @@ interface ReplyPanelProps {
 const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }) => {
   const { user } = useUser();
   const [replies, setReplies] = useState<Post[]>([]);
+  const [originalPostTitle, setOriginalPostTitle] = useState<string | null>(null);
 
   useEffect(() => {
+    // Fetch replies
     const repliesRef = collection(db, 'spaces', selectedPost.space, 'posts');
-    
+
     const unsubscribeReplies = onSnapshot(repliesRef, (snapshot) => {
       const repliesData: Post[] = snapshot.docs
         .map((doc) => {
@@ -51,6 +53,7 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
             title: postData.title,
             user: postData.user,
             parentId: postData.parentId,
+            originId: postData.originId,
             reactions: postData.reactions,
           } as Post;
         })
@@ -59,6 +62,24 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
       const sortedReplies = repliesData.sort((a, b) => (b.reactions || 0) - (a.reactions || 0));
       setReplies(sortedReplies);
     });
+
+    console.log(selectedPost.originId)
+    // Fetch the original post's title if originId exists
+    if (selectedPost.originId) {
+      const fetchOriginalPostTitle = async () => {
+        const originPostRef = doc(db, 'spaces', selectedPost.space, 'posts', selectedPost.originId!);
+        const originPostSnapshot = await getDoc(originPostRef);
+
+        if (originPostSnapshot.exists()) {
+          const originPostData = originPostSnapshot.data();
+          setOriginalPostTitle(originPostData.title || ''); // Update with the original title
+        }
+      };
+
+      fetchOriginalPostTitle();
+    } else {
+      setOriginalPostTitle(selectedPost.title); // Set the current post's title if no originId
+    }
 
     return () => {
       unsubscribeReplies();
@@ -81,6 +102,7 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
           title: parentPostData?.title || '',
           user: parentPostData?.user || { first_name: '', last_name: '', username: '', uid: '', school: '' },
           parentId: parentPostData?.parentId,
+          originId: parentPostData?.originId,
         });
       }
     } else {
@@ -97,29 +119,47 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
 
   return (
     <div className="flex flex-col space-y-2 px-4 py-6 overflow-hidden">
-      <div className='bg-white px-4 py-2 rounded-lg border border-slate-200 flex space-x-2 items-center'>
-        <img className='hover:cursor-pointer h-5' 
-          src='/assets/icons/go_back_icon.svg'
-          onClick={handleGoBack} />
-        <div className='font-bold text-lg hover:cursor-pointer pl-2'>{selectedPost.title}</div>
-        <div className='border border-black rounded-full w-52 h-8 flex justify-center items-center font-bold'>View original post</div>
+      <div className="bg-white px-4 py-2 rounded-lg border border-slate-200 flex items-center justify-between">
+        <div className="flex space-x-2 items-center justify-center">
+          <img
+            className="hover:cursor-pointer h-5"
+            src="/assets/icons/go_back_icon.svg"
+            onClick={handleGoBack}
+          />
+          <div className="font-bold text-lg hover:cursor-pointer pl-2">
+            {originalPostTitle}
+          </div>
+        </div>
+        <div className="border border-black rounded-full w-44 h-8 flex justify-center items-center font-bold">
+          View original post
+        </div>
       </div>
       <div className="space-y-2 overflow-y-auto flex-1 py-1 px-1">
-        <PostItem post={selectedPost} currentUser={user!} setFilteredSpace={() => {}} onReplyClick={handleReplyClick} />
-        
+        <PostItem
+          post={selectedPost}
+          currentUser={user!}
+          setFilteredSpace={() => {}}
+          onReplyClick={handleReplyClick}
+        />
+
         {/* Pass originId to ReplyForm */}
-        <ReplyForm 
+        <ReplyForm
           parentPostId={selectedPost.id}
           space={selectedPost.space}
           postOwnerUsername={selectedPost.user?.username || 'unknown'}
           originId={selectedPost.originId || selectedPost.id} // Ensure originId is passed correctly
         />
-        
+
         {replies.length > 0 && (
           <div className="space-y-2 mt-4">
             {replies.map((reply) => (
               <div key={reply.id}>
-                <PostItem post={reply} currentUser={user!} setFilteredSpace={() => {}} onReplyClick={() => handleReplyClick(reply.id)} />
+                <PostItem
+                  post={reply}
+                  currentUser={user!}
+                  setFilteredSpace={() => {}}
+                  onReplyClick={() => handleReplyClick(reply.id)}
+                />
               </div>
             ))}
           </div>
@@ -128,6 +168,5 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
     </div>
   );
 };
-
 
 export default ReplyPanel;

@@ -23,6 +23,7 @@ interface Post {
   title: string;
   user: User;
   parentId?: string; // Optional field for parent post (if it's a reply)
+  originId?: string;
 }
 
 interface MidPanelProps {
