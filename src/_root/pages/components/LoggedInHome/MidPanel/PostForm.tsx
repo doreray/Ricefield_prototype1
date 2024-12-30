@@ -83,12 +83,6 @@ const PostForm: React.FC = () => {
         bookmark: false,
       });
 
-      // Initialize subcollections for the post
-      const upvotesCollection = collection(postRef, 'upvotes');
-      const downvotesCollection = collection(postRef, 'downvotes');
-      const repliesCollection = collection(postRef, 'replies');
-      const recookCollection = collection(postRef, 'recook');
-
       setNewPost('');
       setTitle('');
     } catch (error) {
@@ -170,7 +164,7 @@ const PostForm: React.FC = () => {
           placeholder="Add a title"
           value={title}
           onChange={(e) => {
-            if (e.target.value.length <= 100) {
+            if (e.target.value.length <= 60) {
               setTitle(e.target.value);
             }
           }}
@@ -183,8 +177,8 @@ const PostForm: React.FC = () => {
             outline: 'none',
           }}
         />
-        <div className={`ml-2 text-sm font-normal font-dmsans ${title.length === 100 ? 'text-red' : 'text-gray-500'}`}>
-          {title.length}/100
+        <div className={`ml-2 text-sm font-normal font-dmsans ${title.length === 60 ? 'text-red' : 'text-gray-500'}`}>
+          {title.length}/60
         </div>
         </div>
       </div>
