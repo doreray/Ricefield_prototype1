@@ -93,7 +93,7 @@ const PostForm: React.FC = () => {
   };
 
   return (
-    <div className={`bg-white px-4 pt-4 pb-5 rounded-lg border border-slate-200 focus-within:ring-2 focus-within:ring-primary-500
+    <div className={`bg-white px-4 pt-4 pb-5 rounded-lg border border-primary-500 focus-within:ring-2 focus-within:ring-primary-500
       ${
         isDropdownOpen ? 'ring-2 ring-primary-500' : ''
       }`}>

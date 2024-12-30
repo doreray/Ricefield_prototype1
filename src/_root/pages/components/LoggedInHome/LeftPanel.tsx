@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface LeftPanelProps {
   setFilteredSpace: React.Dispatch<React.SetStateAction<string>>; // Prop to update filteredSpace
@@ -8,13 +9,15 @@ interface LeftPanelProps {
 const LeftPanel: React.FC<LeftPanelProps> = ({ setFilteredSpace }) => {
   const [isSpacesMenuOpen, setIsSpacesMenuOpen] = useState(true);
 
+  const navigate = useNavigate();
+
   const toggleSpacesMenu = () => {
     setIsSpacesMenuOpen((prev) => !prev);
   };
 
   const handleHomeClick = () => {
     setFilteredSpace(''); // Reset the filter to show all posts when "Home" is clicked
-    window.location.reload(); // Reload the page when Home is clicked
+    navigate('/home');
   };
 
   return (

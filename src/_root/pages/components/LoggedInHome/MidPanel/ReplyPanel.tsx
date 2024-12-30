@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase/config';
 import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore';
-import { useUser } from '@/contexts/UserContext'; // To get the user data
+import { useUser } from '@/contexts/UserContext';
+import { useParams, useNavigate } from 'react-router-dom';
 import PostItem from './PostItem';
 import ReplyForm from './ReplyForm';
+
 
 interface User {
   first_name: string;
@@ -21,32 +23,54 @@ interface Post {
   space: string;
   title: string;
   user: User;
-  parentId?: string; // Optional field for parent post (if it's a reply)
+  parentId?: string;
   originId?: string;
-  reactions?: number; // Number of reactions (both positive and negative)
+  reactions?: number;
 }
 
-interface ReplyPanelProps {
-  selectedPost: Post; // The selected post that was clicked for replying
-  setSelectedPost: (post: Post | null) => void; // Function to go back to normal posts
-}
-
-const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }) => {
+const ReplyPanel: React.FC = () => {
   const { user } = useUser();
+  const { space, postId } = useParams<{ space: string; postId: string }>();
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [replies, setReplies] = useState<Post[]>([]);
   const [originalPostTitle, setOriginalPostTitle] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch replies
-    const repliesRef = collection(db, 'spaces', selectedPost.space, 'posts');
+    if (!space || !postId) return; // Ensure space and postId are defined
 
+    // Fetch the selected post
+    const fetchSelectedPost = async () => {
+      if (!space || !postId) return; // Double-check for undefined values
+      const postRef = doc(db, 'spaces', space, 'posts', postId);
+      const postSnapshot = await getDoc(postRef);
+
+      if (postSnapshot.exists()) {
+        const postData = postSnapshot.data();
+        setSelectedPost({
+          id: postSnapshot.id,
+          space: space,
+          owner: postData.owner,
+          content: postData.content,
+          timestamp: postData.timestamp,
+          title: postData.title,
+          user: postData.user,
+          parentId: postData.parentId,
+          originId: postData.originId,
+          reactions: postData.reactions,
+        } as Post);
+      }
+    };
+
+    // Fetch replies
+    const repliesRef = collection(db, 'spaces', space, 'posts');
     const unsubscribeReplies = onSnapshot(repliesRef, (snapshot) => {
       const repliesData: Post[] = snapshot.docs
         .map((doc) => {
           const postData = doc.data();
           return {
             id: doc.id,
-            space: selectedPost.space,
+            space: space,
             owner: postData.owner,
             content: postData.content,
             timestamp: postData.timestamp,
@@ -57,56 +81,42 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
             reactions: postData.reactions,
           } as Post;
         })
-        .filter((post) => post.parentId === selectedPost.id);
+        .filter((post) => post.parentId === postId);
 
       const sortedReplies = repliesData.sort((a, b) => (b.reactions || 0) - (a.reactions || 0));
       setReplies(sortedReplies);
     });
 
-    console.log(selectedPost.originId)
-    // Fetch the original post's title if originId exists
-    if (selectedPost.originId) {
-      const fetchOriginalPostTitle = async () => {
-        const originPostRef = doc(db, 'spaces', selectedPost.space, 'posts', selectedPost.originId!);
-        const originPostSnapshot = await getDoc(originPostRef);
+    if (selectedPost) {
+      if (selectedPost.originId) {
+        const fetchOriginalPostTitle = async () => {
+          if (!space || !selectedPost.originId) return; // Ensure space and originId are defined
+          const originPostRef = doc(db, 'spaces', space, 'posts', selectedPost.originId!);
+          const originPostSnapshot = await getDoc(originPostRef);
 
-        if (originPostSnapshot.exists()) {
-          const originPostData = originPostSnapshot.data();
-          setOriginalPostTitle(originPostData.title || ''); // Update with the original title
-        }
-      };
+          if (originPostSnapshot.exists()) {
+            const originPostData = originPostSnapshot.data();
+            setOriginalPostTitle(originPostData.title || '');
+          }
+        };
 
-      fetchOriginalPostTitle();
-    } else {
-      setOriginalPostTitle(selectedPost.title); // Set the current post's title if no originId
+        fetchOriginalPostTitle();
+      } else {
+        setOriginalPostTitle(selectedPost.title);
+      }
     }
 
-    return () => {
-      unsubscribeReplies();
-    };
-  }, [selectedPost]);
+    fetchSelectedPost();
+
+    return () => unsubscribeReplies();
+  }, [space, postId, selectedPost]);
 
   const handleGoBack = async () => {
-    if (selectedPost.parentId) {
-      const parentPostRef = doc(db, 'spaces', selectedPost.space, 'posts', selectedPost.parentId);
-      const docSnapshot = await getDoc(parentPostRef);
-
-      if (docSnapshot.exists()) {
-        const parentPostData = docSnapshot.data();
-        setSelectedPost({
-          id: docSnapshot.id,
-          space: selectedPost.space,
-          owner: parentPostData?.owner || '',
-          content: parentPostData?.content || '',
-          timestamp: parentPostData?.timestamp || { seconds: 0 },
-          title: parentPostData?.title || '',
-          user: parentPostData?.user || { first_name: '', last_name: '', username: '', uid: '', school: '' },
-          parentId: parentPostData?.parentId,
-          originId: parentPostData?.originId,
-        });
-      }
+    if (selectedPost?.parentId) {
+      if (!space || !selectedPost.parentId) return; // Ensure space and parentId are defined
+      navigate(`/home/spaces/${selectedPost.space}/posts/${selectedPost.parentId}`);
     } else {
-      setSelectedPost(null);
+      navigate('/home');
     }
   };
 
@@ -135,20 +145,24 @@ const ReplyPanel: React.FC<ReplyPanelProps> = ({ selectedPost, setSelectedPost }
         </div>
       </div>
       <div className="space-y-2 overflow-y-auto flex-1 py-1 px-1">
-        <PostItem
-          post={selectedPost}
-          currentUser={user!}
-          setFilteredSpace={() => {}}
-          onReplyClick={handleReplyClick}
-        />
+        {selectedPost && (
+          <PostItem
+            post={selectedPost}
+            currentUser={user!}
+            setFilteredSpace={() => {}}
+            onReplyClick={handleReplyClick}
+          />
+        )}
 
         {/* Pass originId to ReplyForm */}
-        <ReplyForm
-          parentPostId={selectedPost.id}
-          space={selectedPost.space}
-          postOwnerUsername={selectedPost.user?.username || 'unknown'}
-          originId={selectedPost.originId || selectedPost.id} // Ensure originId is passed correctly
-        />
+        {selectedPost && (
+          <ReplyForm
+            parentPostId={selectedPost.id}
+            space={selectedPost.space}
+            postOwnerUsername={selectedPost.user?.username || 'unknown'}
+            originId={selectedPost.originId || selectedPost.id} // Ensure originId is passed correctly
+          />
+        )}
 
         {replies.length > 0 && (
           <div className="space-y-2 mt-4">

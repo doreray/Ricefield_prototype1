@@ -16,10 +16,10 @@ const DeleteConfirmationPopup: React.FC<DeleteConfirmationPopupProps> = ({ onCan
 
   return (
     <div 
-      className="fixed top-0 left-0 w-full h-full bg-opacity-50 bg-gray-800 flex justify-center items-center" 
+      className="fixed top-0 -left-2 w-full h-full bg-opacity-50 bg-gray-800 flex justify-center items-center" 
       onClick={handleBackgroundClick} // Close the popup when clicking outside
     >
-      <div className="bg-white p-8 rounded-lg w-1/8" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white p-8 rounded-lg" onClick={(e) => e.stopPropagation()}>
         <div className='text-center w-full font-bold text-lg'>Delete Post?</div>
         <div className=''>
           Uh-oh, looks like it's cooked a bit too much<br/>and now it's burned!
