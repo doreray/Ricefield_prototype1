@@ -93,7 +93,7 @@ const PostForm: React.FC = () => {
   };
 
   return (
-    <div className={`bg-white px-4 pt-4 pb-3 rounded-lg border border-slate-200 focus-within:ring-2 focus-within:ring-primary-500
+    <div className={`bg-white px-4 pt-4 pb-5 rounded-lg border border-slate-200 focus-within:ring-2 focus-within:ring-primary-500
       ${
         isDropdownOpen ? 'ring-2 ring-primary-500' : ''
       }`}>
@@ -202,7 +202,7 @@ const PostForm: React.FC = () => {
         }}
       />
 
-      <div className="flex justify-between items-center h-8 pt-1">
+      <div className="flex justify-between items-center h-8 mt-2 pt-1">
         <img src="/assets/icons/media-icon.svg" className="h-6 cursor-pointer" />
         <div className="flex items-center">
           <div className={`px-3 text-sm font-normal font-dmsans ${newPost.length === 300 ? 'text-red' : 'text-gray-500'}`}>
