@@ -67,13 +67,16 @@ const TopBar: React.FC = () => {
           src="/assets/icons/ricefield logo home.svg"
           alt="Logo"
           className="h-8 cursor-pointer"
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            navigate('/')
+            window.location.reload()}
+          }
         />
         <img
           src="/assets/icons/beta version mark.svg"
           alt="BETA"
           className="h-5 mb-4 cursor-pointer"
-          onClick={() => navigate('/home')}
+          onClick={() => navigate('/')}
         />
       </div>
       <div className="flex items-center space-x-4">

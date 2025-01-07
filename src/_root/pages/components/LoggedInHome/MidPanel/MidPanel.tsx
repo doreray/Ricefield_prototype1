@@ -120,8 +120,16 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) 
         <div className="space-y-2 overflow-y-auto flex-1 py-1 px-1">
           <PostForm />
           {groupedPosts.length === 0 && (
-            <div className="text-center text-gray-500">
-              No posts available. Be the first to post!
+            <div className='flex justify-center items-center space-x-4'>
+              <img className='h-48' src='/assets/icons/tractor_icon.svg' />
+              <div className='flex-col'>
+              <div className="font-bold text-2xl">
+                Space not cooked yet!
+              </div>
+              <div className="">
+                It's your chance to be the first to cook this Space :)
+              </div>
+              </div>
             </div>
           )}
           {groupedPosts.map((post) => (

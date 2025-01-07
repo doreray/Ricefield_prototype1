@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 import { db } from '@/lib/firebase/config';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, deleteDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import PostVotes from './PostVotes';
 import PostMeta from './PostMeta';
@@ -35,7 +35,13 @@ interface PostItemProps {
   onReplyClick: (replyId: string) => void;
 }
 
-const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace, onReplyClick }) => {
+const PostItem: React.FC<PostItemProps> = ({
+  post,
+  currentUser,
+  setFilteredSpace,
+  onReplyClick,
+}) => {
+  const [isDeleted, setIsDeleted] = useState(false);
   const [repliesCount, setRepliesCount] = useState<number>(0);
   const [isPopupVisible, setPopupVisible] = useState(false);
   const navigate = useNavigate(); // Initialize navigate
@@ -57,22 +63,29 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
     fetchRepliesCount();
   }, [post.id, post.space]);
 
-  const handleDeletePost = async () => {
-    // Handle post deletion logic here
-  };
-
-  const handleReportPost = () => {
-    // Handle post reporting logic here
-  };
-
   const handleReplyClick = () => {
     // Navigate to the post URL when replying
     navigate(`/${post.space}/${post.id}`);
+    window.location.reload()
   };
+
+  if (isDeleted) {
+    return (
+      <div className="bg-white p-2 rounded-lg border border-slate-200 flex flex-col items-center space-y-4">
+        <p className="text-gray-500 font-bold">Your post has been deleted.</p>
+      </div>
+    );
+  }
 
   return (
     <div key={post.id} className="bg-white p-4 rounded-lg border border-slate-200">
-      <PostMeta post={post} currentUser={currentUser} setFilteredSpace={setFilteredSpace} onReplyClick={onReplyClick} />
+      <PostMeta
+        post={post}
+        currentUser={currentUser}
+        setFilteredSpace={setFilteredSpace}
+        onReplyClick={onReplyClick}
+        setPostDeleted={setIsDeleted} // Pass the callback to PostMeta
+      />
       <div className="font-bold text-xl mt-2 break-words px-12">{post.title || ''}</div>
       <div className="break-words mt-2 px-12">{post.content}</div>
       {post.image && <img className="h-8 mt-2" src={post.image} alt="Post image" />}
@@ -86,10 +99,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
           <div className="font-dmsans">{repliesCount}</div>
         </div>
       </div>
-      
-      {isPopupVisible && (
-        <DeleteConfirmationPopup onCancel={() => setPopupVisible(false)} onDelete={handleDeletePost} />
-      )}
     </div>
   );
 };

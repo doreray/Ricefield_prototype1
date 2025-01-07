@@ -27,9 +27,16 @@ interface PostMetaProps {
   currentUser: User;
   setFilteredSpace: (space: string) => void;
   onReplyClick: (replyId: string) => void;
+  setPostDeleted: (deleted: boolean) => void; // Add this prop
 }
 
-const PostMeta: React.FC<PostMetaProps> = ({ post, currentUser, setFilteredSpace, onReplyClick }) => {
+const PostMeta: React.FC<PostMetaProps> = ({
+  post,
+  currentUser,
+  setFilteredSpace,
+  onReplyClick,
+  setPostDeleted, // Receive the prop
+}) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
 
   // Safe check if post.timestamp exists
@@ -77,6 +84,7 @@ const PostMeta: React.FC<PostMetaProps> = ({ post, currentUser, setFilteredSpace
             isPopupVisible={isPopupVisible}
             setPopupVisible={setPopupVisible}
             onReplyClick={onReplyClick}
+            setPostDeleted={setPostDeleted} // Pass the callback to PostActions
           />
         </div>
       </div>

@@ -17,7 +17,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({ setFilteredSpace }) => {
 
   const handleHomeClick = () => {
     setFilteredSpace(''); // Reset the filter to show all posts when "Home" is clicked
-    navigate('/home');
+    navigate('/');
+    window.location.reload();
   };
 
   return (
