@@ -35,7 +35,7 @@ const SigninForm = () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       console.log('Logged in:', userCredential.user);
-      navigate('/home'); // redirect after successful login
+      navigate('/'); // redirect after successful login
     } catch (error) {
       if (error instanceof Error) {
         setError('Invalid email or password. Please try again.');

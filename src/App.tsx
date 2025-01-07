@@ -32,52 +32,52 @@ const AuthActionHandler = () => {
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true); // Track loading state
   const navigate = useNavigate();
   const location = useLocation();
   const auth = getAuth();
 
-  // Check authentication state only when at "/" or "/home"
   useEffect(() => {
-    if (location.pathname === "/" || location.pathname === "/home") {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-          setIsLoggedIn(true);
-          if (location.pathname === "/") navigate("/home");
-        } else {
-          setIsLoggedIn(false);
-          if (location.pathname === "/home") navigate("/");
-        }
-      });
+    // Check authentication state
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsLoggedIn(!!user); // Set logged-in state based on user
+      setLoading(false); // Auth check completed
+    });
+  
+    return () => unsubscribe();
+  }, [auth]);
+  
 
-      // Cleanup subscription on unmount
-      return () => unsubscribe();
-    }
-  }, [location.pathname, navigate, auth]);
+  if (loading) {
+    // Show a loader while authentication is being checked
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <UserProvider>
-    <main className="flex h-screen">
-      <Routes>
-        {/* Public routes */}
-        <Route element={<AuthLayout />}>
-          <Route path="/sign-in" element={<SigninForm />} />
-          <Route path="/sign-up" element={<SignupForm />} />
-          <Route path="/sign-up-more" element={<SignupForm2 />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/pre-reset-password" element={<PreResetPassword />} />
-          <Route path="/__/auth/action" element={<AuthActionHandler />} />
-          <Route path="/email-reset-password" element={<EmailResetPassword />} />
-        </Route>
+      <main className="flex h-screen">
+        <Routes>
+          {/* Public routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/sign-in" element={<SigninForm />} />
+            <Route path="/sign-up" element={<SignupForm />} />
+            <Route path="/sign-up-more" element={<SignupForm2 />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/pre-reset-password" element={<PreResetPassword />} />
+            <Route path="/__/auth/action" element={<AuthActionHandler />} />
+            <Route path="/email-reset-password" element={<EmailResetPassword />} />
+          </Route>
 
-        {/* Private routes */}
-        <Route path="/" element={isLoggedIn ? <LoggedInHome /> : <Home />} />
-
-        <Route path="/home" element={isLoggedIn ? <LoggedInHome /> : <Home />}>
-          {/* Nested route for posts */}
-          <Route path="/home/spaces/:space/posts/:postId" element={<ReplyPanel />} />
-        </Route>
-      </Routes>
-    </main>
+          {/* Private routes */}
+          <Route path="/" element={isLoggedIn ? <LoggedInHome /> : <Home />}>
+            <Route path="/:space/:postId" element={<ReplyPanel />} />
+          </Route>
+        </Routes>
+      </main>
     </UserProvider>
   );
 };

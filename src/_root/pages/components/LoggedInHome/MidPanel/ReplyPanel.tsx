@@ -114,9 +114,9 @@ const ReplyPanel: React.FC = () => {
   const handleGoBack = async () => {
     if (selectedPost?.parentId) {
       if (!space || !selectedPost.parentId) return; // Ensure space and parentId are defined
-      navigate(`/home/spaces/${selectedPost.space}/posts/${selectedPost.parentId}`);
+      navigate(`/${selectedPost.space}/${selectedPost.parentId}`);
     } else {
-      navigate('/home');
+      navigate('/');
     }
   };
 

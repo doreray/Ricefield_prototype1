@@ -16,8 +16,14 @@ const LoggedInHome: React.FC = () => {
     return <div>Loading...</div>; // Or show login screen
   }
 
-  // Check if we are on a post reply route
-  const isReplyRoute = location.pathname.includes('/spaces/') && location.pathname.includes('/posts/');
+  // Define the list of valid spaces
+const validSpaces = ['confession', 'memes', 'news', 'questions', 'rant'];
+
+// Create a regex to match the route pattern
+const isReplyRoute = validSpaces.some((space) =>
+  location.pathname.match(new RegExp(`^/${space}/[^/]+$`))
+);
+
 
   return (
     <div className="h-screen flex flex-col w-screen bg-home-divider">

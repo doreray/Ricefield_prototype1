@@ -67,7 +67,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser, setFilteredSpace
 
   const handleReplyClick = () => {
     // Navigate to the post URL when replying
-    navigate(`/home/spaces/${post.space}/posts/${post.id}`);
+    navigate(`/${post.space}/${post.id}`);
   };
 
   return (
