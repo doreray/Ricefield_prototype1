@@ -31,6 +31,39 @@ function RightPanel() {
   // Check if the current user is allowed
   const isUserAllowed = user?.uid === allowedUser && user?.email === allowedEmail;
 
+  useEffect(() => {
+    const fetchPollVotes = async () => {
+      try {
+        const updatedPolls = await Promise.all(polls.map(async (poll) => {
+          const pollRef = doc(db, 'polls', poll.id);
+  
+          let totalVotes = 0;
+          const totalVotesArray = await Promise.all(poll.options.map(async (_, index) => {
+            const optionRef = doc(pollRef, 'options', `${index}`);
+            const optionDoc = await getDoc(optionRef);
+            return optionDoc.data()?.votes || 0;
+          }));
+  
+          totalVotes = totalVotesArray.reduce((sum, votes) => sum + votes, 0);
+  
+          const optionsWithPercentages = poll.options.map((option, index) => ({
+            ...option,
+            votes: totalVotesArray[index],
+            percentage: totalVotes > 0 ? (totalVotesArray[index] / totalVotes) * 100 : 0,
+          }));
+  
+          return { ...poll, options: optionsWithPercentages };
+        }));
+  
+        setPolls(updatedPolls);
+      } catch (error) {
+        console.error('Error fetching poll votes:', error);
+      }
+    };
+  
+    fetchPollVotes();
+  }, [polls]);  // Trigger the effect when `polls` is updated or on page load
+
   // Fetch polls from Firebase
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'polls'), (snapshot) => {
@@ -107,9 +140,6 @@ function RightPanel() {
   
     if (!userVoteDoc.exists()) {
       // Create the voted collection and document only if the user is voting for the first time
-      await addDoc(votedCollectionRef, {});  // Create the sub-collection dynamically
-  
-      // Add user to the voted collection and increment the vote count
       await setDoc(userVoteRef, { userId: user.uid });
       const optionRef = doc(pollRef, 'options', `${optionIndex}`);
       await updateDoc(optionRef, { votes: increment(1) });
@@ -125,7 +155,8 @@ function RightPanel() {
   
     // Recalculate the total votes and percentages
     await getPollsWithVoteCounts();
-  };  
+  };
+  
 
   const getPollsWithVoteCounts = async () => {
     const updatedPolls = await Promise.all(polls.map(async (poll) => {
@@ -155,9 +186,8 @@ function RightPanel() {
   };
 
   const handleDeletePoll = async (pollId: string) => {
-    if (isUserAllowed) {
       await deleteDoc(doc(db, 'polls', pollId));
-    }
+      window.location.reload();
   };
 
   return (
