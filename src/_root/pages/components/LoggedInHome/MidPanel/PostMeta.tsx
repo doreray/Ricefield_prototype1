@@ -40,41 +40,80 @@ const PostMeta: React.FC<PostMetaProps> = ({
   const [isPopupVisible, setPopupVisible] = useState(false);
 
   // Safe check if post.timestamp exists
-  const timestamp = post.timestamp ? formatDistanceToNow(new Date(post.timestamp.seconds * 1000)) : 'Unknown time';
+  const timestamp = post.timestamp
+    ? formatDistanceToNow(new Date(post.timestamp.seconds * 1000))
+        .replace('less than a minute', '0m')
+        .replace(' minutes', 'm')
+        .replace(' minute', 'm')
+        .replace(' hours', 'h')
+        .replace(' hour', 'h')
+        .replace(' days', 'd')
+        .replace(' day', 'd')
+        .replace(' months', 'mo')
+        .replace(' years', 'y')
+        .replace('about ', '')
+    : 'Freshly Cooked';
 
   return (
     <div className="flex items-center space-x-2">
       <img src="/assets/icons/pfp on post.svg" alt="Profile" className="h-10 cursor-pointer" />
       <div className="flex items-center justify-between w-full">
-        <div>
-          <div className="flex items-center space-x-1 h-4">
-            <div className="font-bold cursor-pointer">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center space-x-1 h-4 truncate">
+            <span
+              className="font-bold cursor-pointer truncate"
+              style={{
+                maxWidth: '40%',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              }}
+              title={`${post.user?.first_name || 'Anonymous'} ${post.user?.last_name || ''}`}
+            >
               {post.user?.first_name || 'Anonymous'} {post.user?.last_name || ''}
-            </div>
-            <div className="text-primary-500">@{post.user?.username || 'unknown'}</div>
-            <div className="text-sm text-gray-400">
-            • {post.timestamp
-                  ? formatDistanceToNow(new Date(post.timestamp.seconds * 1000))
-                      .replace(' minutes', 'm')
-                      .replace(' minute', 'm')
-                      .replace(' hour', 'h')
-                      .replace(' hours', 'h')
-                      .replace(' days', 'd')
-                      .replace(' day', 'd')
-                      .replace(' months', 'mo')
-                      .replace(' years', 'y')
-                      .replace('about ', '')
-                      .replace('less than a minute', '0m')
-                      .replace('less than am', '0m')
-                  : 'Freshly Cooked'}
-            </div>
+            </span>
+            <span
+              className="text-primary-500 truncate"
+              style={{
+                maxWidth: '25%',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              }}
+              title={`@${post.user?.username || 'unknown'}`}
+            >
+              @{post.user?.username || 'unknown'}
+            </span>
+            <span
+              className="text-sm text-gray-400 truncate"
+              style={{
+                maxWidth: '30%',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              }}
+              title={timestamp}
+            >
+              • {timestamp}
+            </span>
           </div>
-          <div className="text-sm">{post.user?.school || 'unknown'}</div>
+          <div
+            className="text-sm truncate"
+            style={{
+              maxWidth: '100%',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+            }}
+            title={post.user?.school || 'unknown'}
+          >
+            {post.user?.school || 'unknown'}
+          </div>
         </div>
         <div className="flex space-x-2">
           <Button
             onClick={() => setFilteredSpace(post.space)}
-            className="border border-primary-500 h-7 px-6 rounded-full text-primary-500 font-bold bg-white hover:bg-primary-500 hover:text-white"
+            className="hidden xs:flex border border-primary-500 h-7 px-6 rounded-full text-primary-500 font-bold bg-white hover:bg-primary-500 hover:text-white"
           >
             {post.space.charAt(0).toUpperCase() + post.space.slice(1)}
           </Button>

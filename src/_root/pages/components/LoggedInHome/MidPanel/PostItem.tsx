@@ -89,14 +89,24 @@ const PostItem: React.FC<PostItemProps> = ({
       <div className="font-bold text-xl mt-2 break-words px-12">{post.title || ''}</div>
       <div className="break-words mt-2 px-12">{post.content}</div>
       {post.image && <img className="h-8 mt-2" src={post.image} alt="Post image" />}
-      <div className="flex mt-2 px-12 space-x-2">
-        <PostVotes post={post} currentUser={currentUser} />
-        <div
-          className="bg-gray-200 rounded-full flex items-center py-2 px-3 space-x-2 font-bold hover:cursor-pointer"
-          onClick={handleReplyClick} // Use handleReplyClick to navigate to post URL
-        >
-          <img className="h-5" src="/assets/icons/reply.svg" />
-          <div className="font-dmsans">{repliesCount}</div>
+      <div className='flex justify-between items-center'>
+        <div className="flex mt-2 px-12 space-x-3">
+          <PostVotes post={post} currentUser={currentUser} />
+          <div
+            className="bg-gray-200 rounded-full flex items-center py-2 px-3 space-x-2 font-bold hover:cursor-pointer"
+            onClick={handleReplyClick} // Use handleReplyClick to navigate to post URL
+          >
+            <img className="h-5" src="/assets/icons/reply.svg" />
+            <div className="font-dmsans">{repliesCount}</div>
+          </div>
+        </div>
+        <div className='flex space-x-3'>
+          <div className='bg-gray-200 rounded-full py-2 px-3 hover:cursor-pointer'>
+            <img className='h-5' src='assets/icons/bookmark_icon.svg' alt='Bookmark'/>
+          </div>
+          <div className='bg-gray-200 rounded-full p-2 px-3 hover:cursor-pointer'>
+            <img className='h-5' src='assets/icons/share_icon.svg' alt='Share'/>
+          </div>
         </div>
       </div>
     </div>
