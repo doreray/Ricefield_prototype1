@@ -53,7 +53,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({ setFilteredSpace }) => {
         <ul
           className={`flex flex-col bg-white overflow-hidden transition-all duration-500 ${isSpacesMenuOpen ? 'max-h-96 opacity-100 rounded-lg' : 'max-h-0 opacity-0'}`}
         >
-          {['News', 'Questions', 'Rant', 'Confession', 'Memes'].map((space) => (
+          {['Confession', 'Memes', 'News', 'Questions', 'Rant'].map((space) => (
             <li
               key={space}
               className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-100 cursor-pointer text-black"

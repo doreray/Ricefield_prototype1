@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 import { db } from '@/lib/firebase/config';
-import { collection, getDocs, query, where, doc, deleteDoc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import PostVotes from './PostVotes';
 import PostMeta from './PostMeta';
@@ -15,7 +15,7 @@ interface User {
   username: string;
   uid: string;
   school: string;
-  schoolId?:string;
+  schoolId: string;
 }
 
 interface Post {
@@ -45,7 +45,7 @@ const PostItem: React.FC<PostItemProps> = ({
   const [isDeleted, setIsDeleted] = useState(false);
   const [repliesCount, setRepliesCount] = useState<number>(0);
   const [bookmarkHovered, setBookmarkHovered] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false); // State to track bookmark status
   const [replyHovered, setReplyHovered] = useState(false);
   const [shareHovered, setShareHovered] = useState(false);
   const navigate = useNavigate(); // Initialize navigate
@@ -67,15 +67,42 @@ const PostItem: React.FC<PostItemProps> = ({
     fetchRepliesCount();
   }, [post.id, post.space]);
 
+  // Fetch bookmark status for the current user
+  useEffect(() => {
+    const checkIfBookmarked = async () => {
+      try {
+        if (!currentUser.uid || !currentUser.schoolId) return;
+        
+        const bookmarkRef = doc(
+          db,
+          `schools/${currentUser.schoolId}/users/${currentUser.uid}/bookmarks`,
+          post.id
+        );
+
+        const bookmarkSnapshot = await getDoc(bookmarkRef);
+
+        if (bookmarkSnapshot.exists()) {
+          setIsBookmarked(true); // Post is bookmarked
+        } else {
+          setIsBookmarked(false); // Post is not bookmarked
+        }
+      } catch (error) {
+        console.error('Error checking bookmark status:', error);
+      }
+    };
+
+    checkIfBookmarked();
+  }, [currentUser.uid, currentUser.schoolId, post.id]);
+
   const handleReplyClick = () => {
     // Navigate to the post URL when replying
     navigate(`/${post.space}/${post.id}`);
-    window.location.reload()
+    window.location.reload();
   };
 
   const handleBookmark = async () => {
     try {
-      if (!currentUser.school || !currentUser.uid) {
+      if (!currentUser.schoolId || !currentUser.uid) {
         throw new Error('User school or UID is missing');
       }
 
@@ -85,12 +112,19 @@ const PostItem: React.FC<PostItemProps> = ({
         post.id
       );
 
-      await setDoc(bookmarkRef, {
-        postId: post.id,
-        bookmarkedAt: new Date(),
-      });
+      if (isBookmarked) {
+        // Remove bookmark if already bookmarked
+        await deleteDoc(bookmarkRef);
+        setIsBookmarked(false);
+      } else {
+        // Add bookmark if not bookmarked
+        await setDoc(bookmarkRef, {
+          postId: post.id,
+          bookmarkedAt: new Date(),
+        });
+        setIsBookmarked(true);
+      }
 
-      alert('Post bookmarked successfully!');
     } catch (error) {
       console.error('Error bookmarking post:', error);
     }
@@ -120,8 +154,7 @@ const PostItem: React.FC<PostItemProps> = ({
         <div className="flex mt-2 px-12 space-x-3">
           <PostVotes post={post} currentUser={currentUser} />
           <div
-            className={
-              "bg-gray-200 rounded-full flex items-center space-x-2 font-bold hover:cursor-pointer h-10 w-16 justify-center hover:bg-gray-300"}
+            className={ "bg-gray-200 rounded-full flex items-center space-x-2 font-bold hover:cursor-pointer h-10 w-16 justify-center hover:bg-gray-300"}
             onClick={handleReplyClick} // Use handleReplyClick to navigate to post URL
             onMouseEnter={() => setReplyHovered(true)}
             onMouseLeave={() => setReplyHovered(false)}
@@ -132,10 +165,7 @@ const PostItem: React.FC<PostItemProps> = ({
               replyHovered
               ? "/assets/icons/reply_hover.svg" 
               : "/assets/icons/reply_icon.svg" }/>
-            <div className={
-              replyHovered
-              ? "text-primary-500 font-dmsans"
-              : "font-dmsans"}>{repliesCount}</div>
+            <div className={replyHovered ? "text-primary-500 font-dmsans" : "font-dmsans"}>{repliesCount}</div>
           </div>
         </div>
         <div className='flex space-x-3'>
@@ -147,9 +177,11 @@ const PostItem: React.FC<PostItemProps> = ({
             <img 
             className='h-5' 
             src={
-              bookmarkHovered
-              ? 'assets/icons/bookmark_hover.svg'
-              : 'assets/icons/bookmark_icon.svg'}
+              isBookmarked
+              ? '/assets/icons/bookmark_filled.svg'
+              : bookmarkHovered
+              ? '/assets/icons/bookmark_hover.svg'
+              : '/assets/icons/bookmark_icon.svg'}
             alt='Bookmark'/>
           </div>
           <div 
@@ -160,8 +192,8 @@ const PostItem: React.FC<PostItemProps> = ({
             className='h-5' 
             src={
               shareHovered
-              ? 'assets/icons/share_hover.svg'
-              : 'assets/icons/share_icon.svg'}
+              ? '/assets/icons/share_hover.svg'
+              : '/assets/icons/share_icon.svg'}
             alt='Share'/>
           </div>
         </div>

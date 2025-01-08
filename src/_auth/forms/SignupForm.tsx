@@ -35,22 +35,26 @@ const SignupForm = () => {
 
   //Update validation schema
   const SignupValidation = z.object({
-    username: z.string().min(1, "Don't forget to name your farmer!"),
+    username: z.string()
+      .min(4, "Nope, too short! Gotta be more than 4 characters")
+      .max(20, "Nope, too long! Gotta be less than 20 characters")
+      .regex(/^[a-zA-Z0-9]+$/, "Nope, no special characters or spaces!"), // Regex to allow only letters and numbers
     email: z.string()
-    .email("Oops...you forgot this :)")
-    .regex(/\.edu$/, "Gotta use your college email (.edu)!"),
+      .email("Oops...you forgot this :)")
+      .regex(/\.edu$/, "Gotta use your college email (.edu)!"),
     password: z.string().min(8),
     retypePassword: z.string()
-    .min(1, "Gotta retype your password!")
+      .min(1, "Gotta retype your password!")
   }).superRefine((data, ctx) => {
     if (data.password !== data.retypePassword) {
-        ctx.addIssue({
-            path: ["retypePassword"],
-            message: "Oops...password didn't match :(",
-            code: z.ZodIssueCode.custom,
-        });
+      ctx.addIssue({
+        path: ["retypePassword"],
+        message: "Oops...password didn't match :(",
+        code: z.ZodIssueCode.custom,
+      });
     }
-});
+  });
+  
 
     // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -126,7 +130,7 @@ const SignupForm = () => {
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col">
-            <img src= 'public/assets/icons/Ricefield_logo.svg' alt='logo'/>
+            <img src= '/assets/icons/Ricefield_logo.svg' alt='logo'/>
 
             <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12"> Howdy, Friend </h2>
             <p className="text-light-3 body-regular md:body-regular mt-2">Create your farmer's identity</p>
