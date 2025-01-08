@@ -24,6 +24,7 @@ interface UserData {
   lastname: string;
   firstname: string;
   school: string;
+  schoolId:string;
   major: string;
   gradyear: number;
 }
@@ -61,7 +62,14 @@ function SignupForm2() {
       const user = auth.currentUser;
       if (user) {
         const userBasicInfo = JSON.parse(Cookies.get("userBasicInfo") || "{}"); // Retrieve cookie data using js-cookie
-        const userData = {
+  
+         // Ensure the school selected by the user is a valid key in the schoolMap
+      const schoolId = schoolMap[data.school as keyof typeof schoolMap]; // Type assertion
+      if (!schoolId) {
+        throw new Error("Invalid school selection.");
+      }
+
+      const userData = {
           email: userBasicInfo.email,
           username: userBasicInfo.username,
           last_name: data.lastname,
@@ -69,18 +77,14 @@ function SignupForm2() {
           major: data.major,
           grad_year: parseInt(data.gradyear),
           school: data.school,
+          schoolId: schoolId,
           uid: userBasicInfo.uid,
         };
-  
-         // Ensure the school selected by the user is a valid key in the schoolMap
-      const schoolId = schoolMap[data.school as keyof typeof schoolMap]; // Type assertion
-      if (!schoolId) {
-        throw new Error("Invalid school selection.");
-      }
   
         const userDocRef = doc(db, "schools", schoolId, "users", userBasicInfo.uid);
         await setDoc(userDocRef, userData);
         navigate('/');
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error saving additional data:", error);

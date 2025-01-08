@@ -193,7 +193,7 @@ const TopBar: React.FC = () => {
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-3"
                   onClick={() => alert('Report clicked')}
                 >
-                  <img src="/assets/icons/report-icon.svg" className="h-5" />
+                  <img src="/assets/icons/report_icon_black.svg" className="h-5" />
                   <div className="font-semibold">Report an issue</div>
                 </li>
               </ul>

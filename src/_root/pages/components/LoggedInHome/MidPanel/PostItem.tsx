@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 import { db } from '@/lib/firebase/config';
-import { collection, getDocs, query, where, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, deleteDoc, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import PostVotes from './PostVotes';
 import PostMeta from './PostMeta';
@@ -15,6 +15,7 @@ interface User {
   username: string;
   uid: string;
   school: string;
+  schoolId?:string;
 }
 
 interface Post {
@@ -43,7 +44,10 @@ const PostItem: React.FC<PostItemProps> = ({
 }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [repliesCount, setRepliesCount] = useState<number>(0);
-  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [bookmarkHovered, setBookmarkHovered] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [replyHovered, setReplyHovered] = useState(false);
+  const [shareHovered, setShareHovered] = useState(false);
   const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
@@ -67,6 +71,29 @@ const PostItem: React.FC<PostItemProps> = ({
     // Navigate to the post URL when replying
     navigate(`/${post.space}/${post.id}`);
     window.location.reload()
+  };
+
+  const handleBookmark = async () => {
+    try {
+      if (!currentUser.school || !currentUser.uid) {
+        throw new Error('User school or UID is missing');
+      }
+
+      const bookmarkRef = doc(
+        db,
+        `schools/${currentUser.schoolId}/users/${currentUser.uid}/bookmarks`,
+        post.id
+      );
+
+      await setDoc(bookmarkRef, {
+        postId: post.id,
+        bookmarkedAt: new Date(),
+      });
+
+      alert('Post bookmarked successfully!');
+    } catch (error) {
+      console.error('Error bookmarking post:', error);
+    }
   };
 
   if (isDeleted) {
@@ -93,19 +120,49 @@ const PostItem: React.FC<PostItemProps> = ({
         <div className="flex mt-2 px-12 space-x-3">
           <PostVotes post={post} currentUser={currentUser} />
           <div
-            className="bg-gray-200 rounded-full flex items-center py-2 px-3 space-x-2 font-bold hover:cursor-pointer"
+            className={
+              "bg-gray-200 rounded-full flex items-center space-x-2 font-bold hover:cursor-pointer h-10 w-16 justify-center hover:bg-gray-300"}
             onClick={handleReplyClick} // Use handleReplyClick to navigate to post URL
+            onMouseEnter={() => setReplyHovered(true)}
+            onMouseLeave={() => setReplyHovered(false)}
           >
-            <img className="h-5" src="/assets/icons/reply.svg" />
-            <div className="font-dmsans">{repliesCount}</div>
+            <img 
+            className="h-5 w-5" 
+            src={
+              replyHovered
+              ? "/assets/icons/reply_hover.svg" 
+              : "/assets/icons/reply_icon.svg" }/>
+            <div className={
+              replyHovered
+              ? "text-primary-500 font-dmsans"
+              : "font-dmsans"}>{repliesCount}</div>
           </div>
         </div>
         <div className='flex space-x-3'>
-          <div className='bg-gray-200 rounded-full py-2 px-3 hover:cursor-pointer'>
-            <img className='h-5' src='assets/icons/bookmark_icon.svg' alt='Bookmark'/>
+          <div 
+          className='bg-gray-200 rounded-full hover:cursor-pointer h-10 w-12 flex items-center justify-center hover:bg-gray-300'
+          onClick={handleBookmark}
+          onMouseEnter={() => setBookmarkHovered(true)}
+          onMouseLeave={() => setBookmarkHovered(false)}>
+            <img 
+            className='h-5' 
+            src={
+              bookmarkHovered
+              ? 'assets/icons/bookmark_hover.svg'
+              : 'assets/icons/bookmark_icon.svg'}
+            alt='Bookmark'/>
           </div>
-          <div className='bg-gray-200 rounded-full p-2 px-3 hover:cursor-pointer'>
-            <img className='h-5' src='assets/icons/share_icon.svg' alt='Share'/>
+          <div 
+          className='bg-gray-200 rounded-full hover:cursor-pointer h-10 w-12 flex items-center justify-center hover:bg-gray-300'
+          onMouseEnter={() => setShareHovered(true)}
+          onMouseLeave={() => setShareHovered(false)}>
+            <img 
+            className='h-5' 
+            src={
+              shareHovered
+              ? 'assets/icons/share_hover.svg'
+              : 'assets/icons/share_icon.svg'}
+            alt='Share'/>
           </div>
         </div>
       </div>

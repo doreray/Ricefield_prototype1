@@ -29,6 +29,8 @@ interface PostVotesProps {
 const PostVotes: React.FC<PostVotesProps> = ({ post, currentUser }) => {
   const [upvoted, setUpvoted] = useState(false);
   const [downvoted, setDownvoted] = useState(false);
+  const [hoverUpvote, setHoverUpvote] = useState(false);
+  const [hoverDownvote, setHoverDownvote] = useState(false);
   const [upvotesCount, setUpvotesCount] = useState<number>(0);
   const [downvotesCount, setDownvotesCount] = useState<number>(0);
 
@@ -180,19 +182,35 @@ const PostVotes: React.FC<PostVotesProps> = ({ post, currentUser }) => {
 
 
   return (
-    <div className="bg-gray-200 flex space-x-2 rounded-full items-center py-2 px-3">
+    <div className="bg-gray-200 flex space-x-2 rounded-full items-center py-2 px-3 hover:bg-gray-300 hover:cursor-pointer">
       <img
         className="hover:cursor-pointer h-5"
         alt="Upvote"
-        src={upvoted ? "/assets/icons/upvote_chosen.svg" : "/assets/icons/upvote_default.svg"}
+        src={
+          hoverUpvote
+            ? "/assets/icons/upvote_hover.svg"
+            : upvoted
+            ? "/assets/icons/upvote_chosen.svg"
+            : "/assets/icons/upvote_default.svg"
+        }
         onClick={handleUpvoteClick}
+        onMouseEnter={() => setHoverUpvote(true)}
+        onMouseLeave={() => setHoverUpvote(false)}
       />
       <div className="font-dmsans font-bold">{voteDifference}</div>
       <img
         className="hover:cursor-pointer h-5"
         alt="Downvote"
-        src={downvoted ? "/assets/icons/downvote_chosen.svg" : "/assets/icons/downvote_default.svg"}
+        src={
+          hoverDownvote
+            ? "/assets/icons/downvote_hover.svg"
+            : downvoted
+            ? "/assets/icons/downvote_chosen.svg"
+            : "/assets/icons/downvote_default.svg"
+        }
         onClick={handleDownvoteClick}
+        onMouseEnter={() => setHoverDownvote(true)}
+        onMouseLeave={() => setHoverDownvote(false)}
       />
     </div>
   );

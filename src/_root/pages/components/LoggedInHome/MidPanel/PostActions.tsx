@@ -69,6 +69,7 @@ const PostActions: React.FC<PostActionsProps> = ({
     };
 
     const handleDeletePost = async () => {
+        setDropdownVisible(false);
         try {
             // Reference to the Firestore post document
             const postRef = doc(collection(db, 'spaces', post.space, 'posts'), post.id);
@@ -83,6 +84,7 @@ const PostActions: React.FC<PostActionsProps> = ({
     };
 
     const handleCopyPostLink = () => {
+        setDropdownVisible(false);
         const postUrl = `${window.location.origin}/${post.space}/${post.id}`;
         navigator.clipboard.writeText(postUrl).then(() => {
             showToast('Post URL copied to clipboard!');
@@ -91,6 +93,7 @@ const PostActions: React.FC<PostActionsProps> = ({
 
     const handleReportPost = () => {
         // Open the report form in a new tab
+        setDropdownVisible(false);
         window.open('https://docs.google.com/forms/d/e/1FAIpQLScZUJQN2_wO0a-vdJVSDGLsVWOi1dLkicMkpJpaqtE1yfLOpg/viewform', '_blank');
     };
 

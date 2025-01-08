@@ -28,8 +28,8 @@ const DeleteConfirmationPopup: React.FC<DeleteConfirmationPopupProps> = ({ onCan
           <div className='font-bold mt-4'>No take-backs!</div>
         </div>
         <div className="flex flex-col items-center space-y-6 mt-5">
-          <Button onClick={onCancel} className="bg-gray-200 hover:bg-gray-300 text-black w-full">Cancel</Button>
           <Button onClick={onDelete} className="bg-rose-600 text-white hover:bg-rose-700 w-full">Delete</Button>
+          <Button onClick={onCancel} className="bg-gray-200 hover:bg-gray-300 text-black w-full">Cancel</Button>
         </div>
       </div>
     </div>

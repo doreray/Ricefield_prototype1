@@ -12,6 +12,7 @@ interface User {
   username: string;
   uid: string;
   school: string;
+  schoolId: string;
 }
 
 interface Post {
