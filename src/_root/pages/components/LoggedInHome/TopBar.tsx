@@ -184,7 +184,7 @@ const TopBar: React.FC = () => {
                 </li>
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-3"
-                  onClick={() => alert('Dict clicked')}
+                  onClick={() => window.open('https://joinricefield.notion.site/Farmers-Dictionary-1043b99ded3180a68889ec80aa0bace7', '_blank')}
                 >
                   <img src="/assets/icons/dictionary-icon.svg" className="h-5" />
                   <div className="font-semibold">Farmers' Dictionary</div>

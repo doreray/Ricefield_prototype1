@@ -48,6 +48,9 @@ const PostItem: React.FC<PostItemProps> = ({
   const [isBookmarked, setIsBookmarked] = useState(false); // State to track bookmark status
   const [replyHovered, setReplyHovered] = useState(false);
   const [shareHovered, setShareHovered] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [fadeToast, setFadeToast] = useState(false); // Controls fade-out
   const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
@@ -130,6 +133,22 @@ const PostItem: React.FC<PostItemProps> = ({
     }
   };
 
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setToastVisible(true);
+    setFadeToast(false);
+
+    setTimeout(() => setFadeToast(true), 2000); // Start fade-out after 2 seconds
+    setTimeout(() => setToastVisible(false), 3000); // Fully hide toast after 3 seconds
+};
+
+  const handleShareClick = () => {
+    const postUrl = `${window.location.origin}/${post.space}/${post.id}`;
+        navigator.clipboard.writeText(postUrl).then(() => {
+            showToast('Post URL copied to clipboard!');
+        });
+  };
+
   if (isDeleted) {
     return (
       <div className="bg-white p-2 rounded-lg border border-slate-200 flex flex-col items-center space-y-4">
@@ -187,7 +206,8 @@ const PostItem: React.FC<PostItemProps> = ({
           <div 
           className='bg-gray-200 rounded-full hover:cursor-pointer h-10 w-12 flex items-center justify-center hover:bg-gray-300'
           onMouseEnter={() => setShareHovered(true)}
-          onMouseLeave={() => setShareHovered(false)}>
+          onMouseLeave={() => setShareHovered(false)}
+          onClick={handleShareClick}>
             <img 
             className='h-5' 
             src={
@@ -198,6 +218,15 @@ const PostItem: React.FC<PostItemProps> = ({
           </div>
         </div>
       </div>
+      {/* Toast Notification */}
+      {toastVisible && (
+                <div
+                    className={`fixed bottom-3 right-3 bg-white border border-primary-500 text-black py-2 px-4 rounded-lg shadow-md transition-opacity duration-500 ${fadeToast ? 'opacity-0' : 'opacity-100'
+                        }`}
+                >
+                    {toastMessage}
+                </div>
+            )}
     </div>
   );
 };
