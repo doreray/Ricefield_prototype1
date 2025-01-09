@@ -119,7 +119,7 @@ export const PollList: React.FC<PollListProps> = ({
   };
 
   return (
-    <div className="poll-list">
+    <div className="flex-col space-y-4">
       {pollsWithVotes.map((poll) => (
         <div key={poll.id} className="w-72 bg-home-divider flex flex-col items-center space-y-4">
           <div className="w-68 border border-slate-200 rounded-lg bg-white pt-1 pl-5 pr-5 pb-3">
@@ -156,9 +156,9 @@ export const PollList: React.FC<PollListProps> = ({
               )}
             </div>
 
-            <p className="text-sm">{poll.question}</p>
+            <p className="text-xl font-bold leading-5">{poll.question}</p>
 
-            <div className="w-full mt-4">
+            <div className="w-full mt-4 flex-col space-y-1">
               {poll.options.map((option, index) => {
                 const isSelected = userVotesFromDB[poll.id] === index;
                 return (
@@ -171,18 +171,25 @@ export const PollList: React.FC<PollListProps> = ({
                     }}
                     disabled={isVoting[poll.id]} // Disable button while voting
                   >
-                    <div className="flex justify-between px-4 py-2">
-                      <span className="text-sm text-black">{option.option}</span>
-                      <span className="text-sm text-black">{option.percentage}%</span>
+                    <div className="flex justify-between items-center px-4 py-2">
+                      <span className="text-base text-black font-semibold"
+                      style={{
+                        maxWidth: '75%',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                      }}
+                      >{option.option}</span>
+                      <span className="text-sm text-black flex justify-center items-center">{option.percentage}%</span>
                     </div>
                   </button>
                 );
               })}
             </div>
 
-            <div className="mt-4 text-sm text-gray-600">
+            {/* <div className="text-sm text-gray-600">
               Total Votes: <span className="font-medium">{poll.totalVotes}</span>
-            </div>
+            </div> */}
           </div>
         </div>
       ))}
