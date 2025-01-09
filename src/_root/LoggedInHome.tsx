@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TopBar from './pages/components/LoggedInHome/TopBar';
 import LeftPanel from './pages/components/LoggedInHome/LeftPanel';
-import RightPanel from './pages/components/LoggedInHome/RightPanel';
+import RightPanel from './pages/components/LoggedInHome/RightPanel/RightPanel';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'; // To check the current route
 import MidPanel from './pages/components/LoggedInHome/MidPanel/MidPanel';
 import ReplyPanel from './pages/components/LoggedInHome/MidPanel/ReplyPanel';
