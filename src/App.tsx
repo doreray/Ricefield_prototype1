@@ -16,6 +16,7 @@ import ResetPasswordForm from './_auth/forms/ResetPassword';
 import EmailConfirmation from './_auth/forms/EmailConfirmation';
 import { UserProvider } from './contexts/UserContext';
 import ReplyPanel from './_root/pages/components/LoggedInHome/MidPanel/ReplyPanel';
+import UserProfile from './_root/pages/components/LoggedInHome/MidPanel/UserPanel/UserProfile';
 
 const AuthActionHandler = () => {
   const [searchParams] = useSearchParams();
@@ -75,6 +76,7 @@ const App: React.FC = () => {
           {/* Private routes */}
           <Route path="/" element={isLoggedIn ? <LoggedInHome /> : <Home />}>
             <Route path="/:space/:postId" element={<ReplyPanel />} />
+            <Route path="/:username" element={<UserProfile />} />
           </Route>
         </Routes>
       </main>

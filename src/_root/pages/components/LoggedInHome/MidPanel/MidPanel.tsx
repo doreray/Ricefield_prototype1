@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase/config';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { useUser } from '@/contexts/UserContext'; // To get the user data
-import PostForm from './PostForm';
-import PostItem from './PostItem';
+import PostForm from './PostPanel/PostForm';
+import PostItem from './PostPanel/PostItem';
 import ReplyPanel from './ReplyPanel';
 
 interface User {
@@ -35,7 +35,6 @@ interface MidPanelProps {
 const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) => {
   const { user } = useUser();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Track the selected post
 
   useEffect(() => {
     const fetchPosts = () => {
@@ -93,11 +92,6 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) 
     return timestampB - timestampA;
   });
 
-  // Function to handle selecting a post for reply
-  const handleReplyClick = (post: Post) => {
-    setSelectedPost(post);
-  };
-
   // Group posts by parentId to display replies under original posts
   const groupedPosts = sortedPosts.reduce((acc, post) => {
     if (post.parentId) {
@@ -115,9 +109,6 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) 
 
   return (
     <div className="flex flex-col space-y-2 px-4 py-6 overflow-hidden">
-      {selectedPost ? (
-        <ReplyPanel />
-      ) : (
         <div className="space-y-2 overflow-y-auto flex-1 py-1 px-1">
           <PostForm />
           {groupedPosts.length === 0 && (
@@ -139,7 +130,6 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) 
                 post={post}
                 currentUser={user!}
                 setFilteredSpace={setFilteredSpace}
-                onReplyClick={() => handleReplyClick(post)} // Handle reply click
               />
               {post.replies.length > 0 && (
                 <div className="ml-4 space-y-2">
@@ -149,7 +139,6 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) 
                       post={reply}
                       currentUser={user!}
                       setFilteredSpace={setFilteredSpace}
-                      onReplyClick={() => handleReplyClick(reply)} // Handle reply click
                     />
                   ))}
                 </div>
@@ -157,7 +146,6 @@ const MidPanel: React.FC<MidPanelProps> = ({ filteredSpace, setFilteredSpace }) 
             </div>
           ))}
         </div>
-      )}
     </div>
   );
 };

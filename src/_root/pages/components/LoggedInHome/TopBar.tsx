@@ -3,10 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 import { useUser } from '@/contexts/UserContext';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 
 const TopBar: React.FC = () => {
   const { user } = useUser(); // Access user from context
 
+  const [followersCount, setFollowersCount] = useState<number>(0);
+  const [followingsCount, setFollowingsCount] = useState<number>(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isClosing, setIsClosing] = useState(false); // State for fade-out animation
@@ -15,6 +19,32 @@ const TopBar: React.FC = () => {
   const profileRef = useRef<HTMLDivElement>(null); // Ref for profile dropdown
   const navigate = useNavigate();
   const auth = getAuth();
+
+  useEffect(() => {
+    if (!user?.uid || !user?.schoolId) return;
+
+    const fetchFollowStats = async () => {
+      try {
+        // Fetch followers
+        const followersQuery = query(
+          collection(db, 'schools', user.schoolId, 'users', user.uid, 'followers')
+        );
+        const followersSnapshot = await getDocs(followersQuery);
+        setFollowersCount(followersSnapshot.size);
+
+        // Fetch followings
+        const followingsQuery = query(
+          collection(db, 'schools', user.schoolId, 'users', user.uid, 'followings')
+        );
+        const followingsSnapshot = await getDocs(followingsQuery);
+        setFollowingsCount(followingsSnapshot.size);
+      } catch (error) {
+        console.error('Error fetching follow stats:', error);
+      }
+    };
+
+    fetchFollowStats();
+  }, [user?.uid, user?.schoolId]);
 
   const toggleMenu = () => {
     if (isMenuOpen) {
@@ -108,6 +138,7 @@ const TopBar: React.FC = () => {
                         src="/assets/icons/pfp on post.svg"
                         alt="Profile"
                         className="h-14 rounded-full cursor-pointer"
+                        onClick={() => navigate(`/${user?.username}`)}
                       />
                       <div>
                         <div className="text-lg font-bold leading-none pt-3 flex space-x-1">
@@ -120,11 +151,11 @@ const TopBar: React.FC = () => {
                   </div>
                   <div className="flex space-x-12 pt-4">
                     <div className="flex justify-items-center space-x-1">
-                      <div className="text-lg font-bold font-dmsans">{user?.followers}</div>
+                      <div className="text-lg font-bold font-dmsans">{followersCount}</div>
                       <div className="text-sm pt-1">Followers</div>
                     </div>
                     <div className="flex justify-items-center space-x-1">
-                      <div className="text-lg font-bold font-dmsans">{user?.following}</div>
+                      <div className="text-lg font-bold font-dmsans">{followingsCount}</div>
                       <div className="text-sm pt-1">Following</div>
                     </div>
                   </div>
@@ -136,7 +167,10 @@ const TopBar: React.FC = () => {
                   className="h-8"
                   alt="edit"
                 />
-                <div className="font-semibold text-lg">Edit Profile</div>
+                <div 
+                className="font-semibold text-lg hover:cursor-pointer"
+                onClick={() => navigate(`/${user?.username}`)}
+                >Edit Profile</div>
               </div>
               <div
                 className="flex space-x-4 px-4 py-3 hover:bg-gray-100 rounded-b-xl cursor-pointer"

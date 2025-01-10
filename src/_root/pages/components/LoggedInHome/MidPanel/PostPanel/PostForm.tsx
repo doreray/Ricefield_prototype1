@@ -3,6 +3,7 @@ import { useUser } from '@/contexts/UserContext';
 import { setDoc, serverTimestamp, doc, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const PostForm: React.FC = () => {
   const { user } = useUser();
@@ -14,6 +15,7 @@ const PostForm: React.FC = () => {
   const [isSpaceError, setIsSpaceError] = useState(false);
   const [isTitleError, setIsTitleError] = useState(false);
   const [isContentError, setIsContentError] = useState(false);
+  const navigate = useNavigate();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLTextAreaElement>(null);
@@ -78,7 +80,9 @@ const PostForm: React.FC = () => {
           first_name: user?.first_name || 'Anonymous',
           last_name: user?.last_name || '',
           username: user?.username || 'unknown',
+          uid: user?.uid || 'unknown',
           school: user?.school || 'unknown',
+          schoolId: user?.schoolId || 'unknown',
         },
         bookmark: false,
       });
@@ -98,9 +102,15 @@ const PostForm: React.FC = () => {
         isDropdownOpen ? 'ring-2 ring-primary-500' : ''
       }`}>
       <div className="flex items-center space-x-4">
-        <img src="/assets/icons/pfp on post.svg" alt="Profile" className="h-10" />
+        <img 
+        src="/assets/icons/pfp on post.svg" 
+        alt="Profile" 
+        className="h-10 hover:cursor-pointer" 
+        onClick={() => navigate(`/${user?.username}`)}/>
         <div className="flex-1 relative flex items-center" ref={dropdownRef}>
-          <span className="font-bold pr-1">You</span>
+          <span className="font-bold pr-1 hover:cursor-pointer"
+          onClick={() => navigate(`/${user?.username}`)}
+          >You</span>
           <span className="pr-2">in</span>
           <div
             className={`font-medium text-sm cursor-pointer flex items-center justify-between bg-white p-1 pl-7 rounded-full relative w-40 ${

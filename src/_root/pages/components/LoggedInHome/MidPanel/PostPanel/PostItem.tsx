@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import PostVotes from './PostVotes';
 import PostMeta from './PostMeta';
 import PostActions from './PostActions';
-import DeleteConfirmationPopup from './DeleteConfirmationPopup';
+import DeleteConfirmationPopup from '../DeleteConfirmationPopup';
 
 interface User {
   first_name: string;
@@ -33,14 +33,12 @@ interface PostItemProps {
   post: Post;
   currentUser: User;
   setFilteredSpace: (space: string) => void;
-  onReplyClick: (replyId: string) => void;
 }
 
 const PostItem: React.FC<PostItemProps> = ({
   post,
   currentUser,
   setFilteredSpace,
-  onReplyClick,
 }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [repliesCount, setRepliesCount] = useState<number>(0);
@@ -163,7 +161,6 @@ const PostItem: React.FC<PostItemProps> = ({
         post={post}
         currentUser={currentUser}
         setFilteredSpace={setFilteredSpace}
-        onReplyClick={onReplyClick}
         setPostDeleted={setIsDeleted} // Pass the callback to PostMeta
       />
       <div className="font-bold text-xl mt-2 break-words px-12">{post.title || ''}</div>

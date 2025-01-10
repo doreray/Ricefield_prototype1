@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import PostActions from './PostActions';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
   first_name: string;
@@ -9,6 +10,7 @@ interface User {
   username: string;
   uid: string;
   school: string;
+  schoolId: string;
 }
 
 interface Post {
@@ -26,7 +28,6 @@ interface PostMetaProps {
   post: Post;
   currentUser: User;
   setFilteredSpace: (space: string) => void;
-  onReplyClick: (replyId: string) => void;
   setPostDeleted: (deleted: boolean) => void; // Add this prop
 }
 
@@ -34,10 +35,10 @@ const PostMeta: React.FC<PostMetaProps> = ({
   post,
   currentUser,
   setFilteredSpace,
-  onReplyClick,
   setPostDeleted, // Receive the prop
 }) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const navigate = useNavigate();
 
   // Safe check if post.timestamp exists
   const timestamp = post.timestamp
@@ -56,7 +57,11 @@ const PostMeta: React.FC<PostMetaProps> = ({
 
   return (
     <div className="flex items-center space-x-2">
-      <img src="/assets/icons/pfp on post.svg" alt="Profile" className="h-10 cursor-pointer" />
+      <img src="/assets/icons/pfp on post.svg"
+      alt="Profile"
+      className="h-10 cursor-pointer"
+      onClick={() => navigate(`/${post.user?.username}`)}
+      />
       <div className="flex items-center justify-between w-full">
         <div className="min-w-0 flex-1">
           <div className="flex items-center space-x-1 h-4 truncate">
@@ -69,6 +74,7 @@ const PostMeta: React.FC<PostMetaProps> = ({
                 textOverflow: 'ellipsis',
               }}
               title={`${post.user?.first_name || 'Anonymous'} ${post.user?.last_name || ''}`}
+              onClick={() => navigate(`/${post.user?.username}`)}
             >
               {post.user?.first_name || 'Anonymous'} {post.user?.last_name || ''}
             </span>
@@ -122,7 +128,6 @@ const PostMeta: React.FC<PostMetaProps> = ({
             currentUser={currentUser}
             isPopupVisible={isPopupVisible}
             setPopupVisible={setPopupVisible}
-            onReplyClick={onReplyClick}
             setPostDeleted={setPostDeleted} // Pass the callback to PostActions
           />
         </div>

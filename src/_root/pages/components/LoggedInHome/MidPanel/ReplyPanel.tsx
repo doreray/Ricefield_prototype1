@@ -3,8 +3,8 @@ import { db } from '@/lib/firebase/config';
 import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { useUser } from '@/contexts/UserContext';
 import { useParams, useNavigate } from 'react-router-dom';
-import PostItem from './PostItem';
-import ReplyForm from './ReplyForm';
+import PostItem from './PostPanel/PostItem';
+import ReplyForm from './ReplyPanel/ReplyForm';
 
 interface User {
   first_name: string;
@@ -179,7 +179,6 @@ const ReplyPanel: React.FC = () => {
         post={selectedPost}
         currentUser={user!}
         setFilteredSpace={() => {}}
-        onReplyClick={handleReplyClick}
       />
     )}
 
@@ -217,7 +216,6 @@ const ReplyPanel: React.FC = () => {
               post={reply}
               currentUser={user!}
               setFilteredSpace={() => {}}
-              onReplyClick={() => handleReplyClick(reply.id)} // Make sure clicking a reply navigates to the reply page
             />
           </div>
         ))}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getFirestore, doc, collection, deleteDoc } from 'firebase/firestore';
-import DeleteConfirmationPopup from './DeleteConfirmationPopup';
+import DeleteConfirmationPopup from '../DeleteConfirmationPopup';
 
 interface User {
     first_name: string;
@@ -26,7 +26,6 @@ interface PostActionsProps {
     currentUser: User;
     setPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
     isPopupVisible: boolean;
-    onReplyClick: (replyId: string) => void;
     setPostDeleted: (deleted: boolean) => void; // Add this prop
 }
 
@@ -35,7 +34,6 @@ const PostActions: React.FC<PostActionsProps> = ({
     currentUser,
     setPopupVisible,
     isPopupVisible,
-    onReplyClick,
     setPostDeleted, // Receive the prop
 }) => {
     const [hoveredPostId, setHoveredPostId] = useState<string | null>(null);
