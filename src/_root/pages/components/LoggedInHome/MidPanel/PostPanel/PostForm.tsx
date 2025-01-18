@@ -34,19 +34,20 @@ const PostForm: React.FC = () => {
   }, []);
 
   // Adjust the height of the textarea based on content
-  const adjustTextareaHeight = (textareaRef: React.RefObject<HTMLTextAreaElement>) => {
+  const adjustTextareaHeight = (textareaRef: React.RefObject<HTMLTextAreaElement>, maxLines: number) => {
     if (textareaRef.current) {
-      // Reset the height to 'auto' so the textarea shrinks if content is deleted
+      const lineHeight = parseInt(window.getComputedStyle(textareaRef.current).lineHeight, 10) || 20; // Default to 20px if not found
+      const maxHeight = maxLines * lineHeight;
+  
       textareaRef.current.style.height = 'auto';
-      // Set the height to scrollHeight (needed height to display content)
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, maxHeight)}px`;
     }
   };
-
-  // Call adjustTextareaHeight whenever content changes
+  
+  // Adjust textarea heights when content changes
   useEffect(() => {
-    adjustTextareaHeight(titleRef);
-    adjustTextareaHeight(newPostRef);
+    adjustTextareaHeight(titleRef, 2); // Limit title to 2 lines
+    adjustTextareaHeight(newPostRef, 15); // Limit content to 15 lines
   }, [title, newPost]);
 
   const handlePostSubmit = async () => {
@@ -170,21 +171,23 @@ const PostForm: React.FC = () => {
           }`}>
         <textarea
           ref={titleRef}
-          className='border-none w-11/12'
+          className="border-none w-11/12"
           placeholder="Add a title"
           value={title}
           onChange={(e) => {
-            if (e.target.value.length <= 60) {
-              setTitle(e.target.value);
+            const newTitle = e.target.value.replace(/\n/g, ''); // Remove newlines
+            if (newTitle.length <= 60) {
+              setTitle(newTitle);
             }
           }}
-          rows={1}
+          rows={1} // Ensure it only displays a single row
           style={{
-            resize: 'none', // Disallow vertical resizing
-            minHeight: '20px', // Minimum height
-            maxHeight: '50px', // Maximum height
-            overflow: 'hidden', // Disable scrolling
+            resize: 'none', // Disallow resizing
+            minHeight: '20px', 
+            maxHeight: '50px', 
+            overflow: 'hidden', 
             outline: 'none',
+            whiteSpace: 'nowrap', // Prevents manual line breaks
           }}
         />
         <div className={`ml-2 text-sm font-normal font-dmsans ${title.length === 60 ? 'text-red' : 'text-gray-500'}`}>
@@ -195,20 +198,30 @@ const PostForm: React.FC = () => {
 
       <textarea
         ref={newPostRef}
-        className={`w-full pb-2 mt-2 focus:outline-none border-b ${isContentError ? 'placeholder-red border-b-red' : ''}`}
+        className={`w-full pb-2 mt-2 focus:outline-none border-b ${
+          isContentError ? 'placeholder-red border-b-red' : ''
+        }`}
         placeholder="Yoo, what's cooking rn??"
         value={newPost}
         onChange={(e) => {
-          if (e.target.value.length <= 300) {
-            setNewPost(e.target.value);
+          const text = e.target.value;
+          const textWithoutLineBreaks = text.replace(/\n/g, ""); // Remove newlines for character count
+
+          if (textWithoutLineBreaks.length <= 300) {
+            setNewPost(text);
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && newPost.split("\n").length >= 15) {
+            e.preventDefault(); // Prevent additional line breaks when at limit
           }
         }}
         rows={1}
         style={{
-          resize: 'none', // Disallow vertical resizing
-          minHeight: '40px', // Minimum height
-          maxHeight: '300px', // Maximum height
-          overflow: 'hidden', // Disable scrolling
+          resize: "none",
+          minHeight: "40px",
+          maxHeight: "300px",
+          overflow: "hidden",
         }}
       />
 
