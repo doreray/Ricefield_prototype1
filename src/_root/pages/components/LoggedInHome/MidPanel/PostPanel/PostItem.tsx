@@ -164,7 +164,7 @@ const PostItem: React.FC<PostItemProps> = ({
         setPostDeleted={setIsDeleted} // Pass the callback to PostMeta
       />
       <div className="font-bold text-xl mt-2 break-words px-12">{post.title || ''}</div>
-      <div className="break-words mt-2 px-12">{post.content}</div>
+      <div className="break-words whitespace-pre-wrap mt-2 px-12">{post.content}</div>
       {post.image && <img className="h-8 mt-2" src={post.image} alt="Post image" />}
       <div className='flex justify-between items-center'>
         <div className="flex mt-2 px-12 space-x-3">

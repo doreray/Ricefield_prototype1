@@ -101,7 +101,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
                 <div className='mt-3 flex space-x-10'>
                     <div className='space-x-1.5'>
                         <span className='font-dmsans font-bold text-lg'>{postsCount}</span>
-                        <span className='text-primary-500 text-lg'>Posts</span>
+                        <span className='text-primary-500 text-lg'>Posts Cooked</span>
                     </div>
                     <div className='space-x-1.5'>
                         <span className='font-dmsans font-bold text-lg'>{followersCount}</span>
